@@ -1,50 +1,215 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Prediction Hub • Saint Bev</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/babel-standalone/babel.min.js"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #080808; color: #eef2ff; font-family: 'Inter', sans-serif; line-height: 1.4; padding: 20px 16px 48px; }
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: #111; }
-    ::-webkit-scrollbar-thumb { background: #2c2c2c; border-radius: 10px; }
-    .glass-card { background: rgba(12,12,16,0.85); border: 1px solid rgba(255,255,255,0.05); border-radius: 28px; }
-    button { font-family: inherit; transition: 0.2s; cursor: pointer; }
-    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 12px; }
-    .confidence-bar { height: 6px; background: #1e1e24; border-radius: 12px; overflow: hidden; }
-    .confidence-fill { height: 100%; background: linear-gradient(90deg, #a78bfa, #c084fc); border-radius: 12px; }
-    input, select, textarea { outline: none; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    .ai-result { animation: fadeIn 0.3s ease; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Prediction Hub • Saint Bev</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#080808;color:#eef2ff;font-family:'Space Grotesk',sans-serif;line-height:1.4;padding:20px 16px 60px;min-height:100vh}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:#2c2c2c;border-radius:10px}
+h1{font-size:2rem;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,#fff,#c6aaff);-webkit-background-clip:text;background-clip:text;color:transparent}
+button{font-family:inherit;cursor:pointer;transition:.2s}
+input,select,textarea{font-family:inherit;outline:none}
+.wrap{max-width:900px;margin:0 auto}
+/* HEADER */
+.header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.subtitle{color:#9292aa;font-size:13px;margin-top:4px}
+.btn-new{background:#a78bfa;border:none;border-radius:60px;padding:10px 24px;font-weight:700;color:#000;font-size:14px}
+/* STAT GRID */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
+.stat-card{background:#0c0c10;border-radius:20px;padding:14px 0;text-align:center;border:1px solid #1e1e24}
+.stat-val{font-size:26px;font-weight:800;letter-spacing:-0.5px}
+.stat-label{font-size:10px;color:#5a5a6e;margin-top:4px;letter-spacing:1px}
+/* TABS */
+.tabs{display:flex;gap:4px;background:#101014;border-radius:60px;padding:4px;margin-bottom:24px;border:1px solid #2a2a30;flex-wrap:wrap;width:fit-content}
+.tab{background:transparent;color:#ddd;border:none;border-radius:60px;padding:8px 16px;font-weight:500;font-size:13px;transition:.2s}
+.tab.active{background:#a78bfa;color:#000}
+/* PANEL */
+.panel{background:#0a0a0e;border:1px solid rgba(255,255,255,.05);border-radius:32px;padding:24px 20px}
+.hidden{display:none}
+/* CALLS */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.filt-btn{background:#16161c;border:none;border-radius:40px;padding:6px 14px;color:#ccc;font-weight:500;font-size:12px;cursor:pointer}
+.filt-btn.active{color:#000}
+.call-card{background:#0e0e12;border-radius:20px;padding:16px;border:1px solid #26262c;margin-bottom:12px}
+.call-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap}
+.call-tag{border-radius:40px;padding:3px 10px;font-size:11px;font-weight:600}
+.call-title{font-size:16px;font-weight:700;margin-top:8px}
+.call-actions{display:flex;gap:6px;align-items:center}
+.call-actions select{background:#1d1d24;border:1px solid #2f2f3a;border-radius:40px;padding:5px 10px;color:white;font-size:11px}
+.btn-icon{background:#282832;border:none;border-radius:30px;padding:5px 10px;font-size:12px;color:#ccc}
+.btn-del{background:#2a1a1f;color:#ff8a8a}
+.conf-bar{height:6px;background:#1e1e24;border-radius:12px;overflow:hidden;margin-top:10px}
+.conf-fill{height:100%;background:linear-gradient(90deg,#a78bfa,#c084fc);border-radius:12px}
+.conf-label{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;color:#888}
+.call-notes{font-size:12px;color:#ababb5;margin-top:10px;border-left:2px solid #2c2c34;padding-left:10px}
+.call-date{font-size:10px;color:#5f5f73;margin-top:8px}
+.empty{text-align:center;color:#555;padding:48px;font-size:14px}
+/* KALSHI */
+.ai-box{background:#0c0c12;border:1px solid #1e1e2a;border-radius:20px;padding:16px;margin-bottom:20px}
+.ai-label{font-size:11px;color:#a78bfa;letter-spacing:2px;margin-bottom:10px}
+.ai-input-row{display:flex;gap:8px}
+.ai-input{flex:1;background:#16161e;border:1px solid #2a2a34;border-radius:14px;padding:10px 14px;color:white;font-size:13px}
+.btn-analyze{background:#a78bfa;border:none;border-radius:14px;padding:10px 16px;color:#000;font-weight:700;font-size:12px;white-space:nowrap}
+.btn-analyze:disabled{background:#1a1a24;color:#555}
+.ai-result{margin-top:12px;padding:14px;background:#080810;border:1px solid #2a2a3a;border-radius:14px;font-size:13px;color:#ccc;line-height:1.8;white-space:pre-wrap;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.k-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.k-header h3{font-weight:600}
+.k-header a{color:#a78bfa;font-size:12px;text-decoration:none}
+.k-card{background:#0b0b0f;border-radius:20px;border:1px solid #1e1e26;overflow:hidden;margin-bottom:10px;transition:.2s}
+.k-card.selected{box-shadow:0 0 16px #00cc4433}
+.k-inner{padding:14px}
+.k-badges{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;align-items:center}
+.k-edge{font-size:10px;padding:2px 10px;border-radius:20px;font-weight:700;letter-spacing:1px}
+.k-cat{font-size:10px;color:#555;letter-spacing:1px}
+.k-vol{font-size:10px;background:#191920;padding:2px 8px;border-radius:20px;color:#888}
+.k-title{font-weight:600;font-size:14px;line-height:1.3}
+.k-right{text-align:right;flex-shrink:0}
+.k-pick{font-size:20px;font-weight:800}
+.k-odds{font-size:11px;color:#555}
+.k-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.k-btns{display:flex;gap:8px;margin-top:10px}
+.btn-dive{flex:1;padding:8px;background:#141418;border:1px solid #2a2a34;border-radius:12px;color:#888;font-size:11px;letter-spacing:1px;cursor:pointer;transition:.2s}
+.btn-kalshi{padding:8px 12px;background:#141418;border:1px solid #2a2a34;border-radius:12px;color:#a78bfa;font-size:11px;text-decoration:none;display:flex;align-items:center}
+.k-analysis{border-top:1px solid #1e1e26;padding:14px;background:#070710}
+.k-analysis-label{font-size:10px;letter-spacing:2px;margin-bottom:8px}
+.k-analysis-text{font-size:13px;color:#bbb;line-height:1.8;white-space:pre-wrap}
+/* POLYMARKET */
+.poly-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.btn-refresh{background:#1e1e26;border:none;border-radius:30px;padding:6px 14px;font-size:12px;color:#ccc;cursor:pointer}
+.poly-card{background:#0b0b0f;border-radius:20px;padding:14px 16px;border:1px solid #222;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;text-decoration:none}
+.poly-q{flex:2;font-weight:500;font-size:14px;color:#f0f0ff}
+.poly-odds{font-family:'DM Mono',monospace;font-weight:600;font-size:18px;color:#c084fc}
+.poly-vol{font-size:12px;background:#191920;padding:4px 10px;border-radius:40px;color:#aaa}
+.loading{text-align:center;padding:40px;color:#777;font-size:14px}
+.error-msg{text-align:center;padding:40px;color:#ff6b6b;font-size:13px;line-height:2}
+/* STOCKS */
+.stocks-header{display:flex;justify-content:space-between;margin-bottom:18px}
+.stocks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.stock-card{background:#0c0c10;border-radius:20px;padding:14px;border:1px solid #24242c}
+.stock-top{display:flex;justify-content:space-between;align-items:center}
+.stock-name{font-weight:700;font-size:14px}
+.stock-sym{font-size:10px;background:#19191f;padding:2px 8px;border-radius:20px;color:#666}
+.stock-price{font-size:20px;font-weight:600;margin-top:8px}
+.stock-change{font-size:13px;margin-top:4px}
+.stock-cat{font-size:10px;color:#6e6e86;margin-top:6px}
+/* AI TAB */
+.ai-hero{background:linear-gradient(135deg,#0b0b1a,#101018);border-radius:36px;padding:24px;border:1px solid #2a2a36;margin-bottom:20px}
+.ai-icon{font-size:40px;margin-bottom:10px}
+.ai-title{font-size:22px;font-weight:800;margin-bottom:4px}
+.ai-desc{color:#bcbce6;font-size:13px}
+.ai-snapshot{background:#00000055;border-radius:24px;margin-top:16px;padding:16px}
+.ai-snap-title{font-weight:600;margin-bottom:10px;font-size:14px}
+.ai-snap-stats{display:flex;gap:20px;flex-wrap:wrap}
+.ai-snap-stat span:first-child{font-size:12px;display:block;margin-bottom:2px}
+.ai-snap-stat span:last-child{font-size:26px;font-weight:800}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px}
+.modal-box{background:#101014;border:1px solid #2a2a2e;border-radius:32px;width:100%;max-width:500px;padding:24px;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:22px;font-weight:700;margin-bottom:18px}
+.modal-field{background:#1a1a20;border:1px solid #2e2e36;border-radius:16px;padding:11px 14px;color:white;font-size:13px;width:100%;margin-bottom:12px}
+.modal-row{display:flex;gap:10px;margin-bottom:12px}
+.modal-row .modal-field{margin-bottom:0;flex:1}
+.modal-label{font-size:12px;color:#aaa;margin-bottom:6px;display:block}
+.range-wrap{margin-bottom:12px}
+input[type=range]{width:100%;accent-color:#a78bfa}
+textarea.modal-field{resize:vertical;min-height:60px}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.btn-cancel{background:#1f1f26;border:none;border-radius:40px;padding:9px 16px;color:#bbb;cursor:pointer}
+.btn-save{background:#a78bfa;border:none;border-radius:40px;padding:9px 20px;color:#000;font-weight:600;cursor:pointer}
+</style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-const { useState, useEffect, useCallback } = React;
+<div class="wrap">
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <h1>PREDICTION HUB</h1>
+      <p class="subtitle">SAINT BEV · track your market edge</p>
+    </div>
+    <button class="btn-new" onclick="openModal()">+ New call</button>
+  </div>
 
-// ----- CATEGORIES (including Sports for Kalshi) -----
-const CATEGORIES = ["Crypto","Politics","Energy/Gas","Geopolitics","Stocks","Other","Sports"];
-const categoryColor = (cat) => ({
-  Crypto:"#f7931a", Politics:"#a78bfa", "Energy/Gas":"#fb923c",
-  Geopolitics:"#f43f5e", Stocks:"#34d399", Other:"#94a3b8", Sports:"#ff8c42"
-}[cat] || "#adb7be");
+  <!-- STATS -->
+  <div class="stat-grid" id="statGrid"></div>
 
-const formatVolume = (vol) => {
-  if (!vol) return "—";
-  if (vol >= 1e6) return `$${(vol/1e6).toFixed(1)}M`;
-  if (vol >= 1e3) return `$${(vol/1e3).toFixed(0)}K`;
-  return `$${vol}`;
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('mycalls',this)">📋 My Calls</button>
+    <button class="tab" onclick="switchTab('kalshi',this)">🎯 Kalshi</button>
+    <button class="tab" onclick="switchTab('markets',this)">🎲 Polymarket</button>
+    <button class="tab" onclick="switchTab('stocks',this)">📈 Stocks</button>
+    <button class="tab" onclick="switchTab('ai',this)">🤖 BEV·AI</button>
+  </div>
+
+  <!-- PANELS -->
+  <div class="panel">
+    <div id="panel-mycalls"></div>
+    <div id="panel-kalshi" class="hidden"></div>
+    <div id="panel-markets" class="hidden"></div>
+    <div id="panel-stocks" class="hidden"></div>
+    <div id="panel-ai" class="hidden"></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay hidden" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle">➕ New prediction</div>
+    <input class="modal-field" id="mTitle" placeholder="Prediction title *">
+    <div class="modal-row">
+      <select class="modal-field" id="mCategory">
+        <option>Crypto</option><option>Politics</option><option>Energy/Gas</option>
+        <option>Geopolitics</option><option>Stocks</option><option>Other</option><option>Sports</option>
+      </select>
+      <select class="modal-field" id="mCall">
+        <option>YES</option><option>NO</option>
+      </select>
+    </div>
+    <div class="range-wrap">
+      <label class="modal-label" id="confLabel">Confidence: 70%</label>
+      <input type="range" min="0" max="100" value="70" id="mConf" oninput="document.getElementById('confLabel').textContent='Confidence: '+this.value+'%'">
+    </div>
+    <select class="modal-field" id="mOutcome">
+      <option value="pending">⏳ Pending</option>
+      <option value="correct">✅ Correct</option>
+      <option value="incorrect">❌ Incorrect</option>
+    </select>
+    <input class="modal-field" id="mSource" placeholder="Source URL (optional)">
+    <textarea class="modal-field" id="mNotes" placeholder="Notes / thesis ..."></textarea>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveCall()">Save →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- DATA ----
+const CAT_COLOR = {
+  Crypto:"#f7931a",Politics:"#a78bfa","Energy/Gas":"#fb923c",
+  Geopolitics:"#f43f5e",Stocks:"#34d399",Other:"#94a3b8",Sports:"#ff8c42"
 };
-
-const YF_PROXY = (ticker) => `https://corsproxy.io/?url=https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=5d`;
-
+const EDGE_STYLE = {
+  "+EV":{bg:"#0a2a0a",border:"#00cc44",text:"#00ff55"},
+  "FAIR":{bg:"#1a1a00",border:"#ccaa00",text:"#ffcc00"},
+  "AVOID":{bg:"#2a0a0a",border:"#cc2200",text:"#ff4422"},
+  "MONITOR":{bg:"#0a1a2a",border:"#0088cc",text:"#00aaff"}
+};
+const KALSHI_MARKETS = [
+  {id:"k1",title:"Strait of Hormuz traffic normal before Sep 1, 2026",odds:46,vol:"$15.9M",cat:"Geopolitics",pick:"NO",edge:"+EV"},
+  {id:"k2",title:"WTI Oil above $90 before Aug 1, 2026",odds:41,vol:"$4.2M",cat:"Energy/Gas",pick:"YES",edge:"+EV"},
+  {id:"k3",title:"Spurs win 2026 NBA Championship",odds:62,vol:"$8.1M",cat:"Sports",pick:"NO",edge:"FAIR"},
+  {id:"k4",title:"Knicks win 2026 NBA Championship",odds:38,vol:"$6.7M",cat:"Sports",pick:"YES",edge:"+EV"},
+  {id:"k5",title:"US announces new Iran sanctions before Sep 2026",odds:55,vol:"$2.8M",cat:"Politics",pick:"YES",edge:"MONITOR"},
+  {id:"k6",title:"Fed cuts rates before Sep 2026",odds:48,vol:"$11.3M",cat:"Politics",pick:"YES",edge:"+EV"},
+  {id:"k7",title:"Bitcoin above $100k before Aug 2026",odds:44,vol:"$9.5M",cat:"Crypto",pick:"YES",edge:"+EV"},
+  {id:"k8",title:"US recession declared in 2026",odds:28,vol:"$5.1M",cat:"Stocks",pick:"NO",edge:"FAIR"},
+];
 const WATCH_TICKERS = [
   {sym:"SPY",label:"S&P 500",cat:"Index"},
   {sym:"QQQ",label:"Nasdaq 100",cat:"Index"},
@@ -57,492 +222,349 @@ const WATCH_TICKERS = [
   {sym:"GLD",label:"Gold",cat:"Commodity"},
 ];
 
-const KALSHI_MARKETS = [
-  {id:"k1",title:"Strait of Hormuz traffic normal before Sep 1, 2026",odds:46,vol:"$15.9M",cat:"Geopolitics",pick:"NO",edge:"+EV",url:"https://kalshi.com"},
-  {id:"k2",title:"WTI Oil above $90 before Aug 1, 2026",odds:41,vol:"$4.2M",cat:"Energy/Gas",pick:"YES",edge:"+EV",url:"https://kalshi.com"},
-  {id:"k3",title:"Spurs win 2026 NBA Championship",odds:62,vol:"$8.1M",cat:"Sports",pick:"NO",edge:"FAIR",url:"https://kalshi.com"},
-  {id:"k4",title:"Knicks win 2026 NBA Championship",odds:38,vol:"$6.7M",cat:"Sports",pick:"YES",edge:"+EV",url:"https://kalshi.com"},
-  {id:"k5",title:"US announces new Iran sanctions before Sep 2026",odds:55,vol:"$2.8M",cat:"Politics",pick:"YES",edge:"MONITOR",url:"https://kalshi.com"},
-  {id:"k6",title:"Fed cuts rates before Sep 2026",odds:48,vol:"$11.3M",cat:"Politics",pick:"YES",edge:"+EV",url:"https://kalshi.com"},
-  {id:"k7",title:"Bitcoin above $100k before Aug 2026",odds:44,vol:"$9.5M",cat:"Crypto",pick:"YES",edge:"+EV",url:"https://kalshi.com"},
-  {id:"k8",title:"US recession declared in 2026",odds:28,vol:"$5.1M",cat:"Stocks",pick:"NO",edge:"FAIR",url:"https://kalshi.com"},
-];
-
-const EDGE_STYLE = {
-  "+EV": {bg:"#0a2a0a",border:"#00cc44",text:"#00ff55"},
-  "FAIR": {bg:"#1a1a00",border:"#ccaa00",text:"#ffcc00"},
-  "AVOID": {bg:"#2a0a0a",border:"#cc2200",text:"#ff4422"},
-  "MONITOR": {bg:"#0a1a2a",border:"#0088cc",text:"#00aaff"},
-};
-
-// ----- AI: smart mock responses (never fails) -----
-async function callClaude(userMsg) {
-  await new Promise(r => setTimeout(r, 600 + Math.random() * 300));
-  const lowerMsg = userMsg.toLowerCase();
-  if (lowerMsg.includes("hormuz") || lowerMsg.includes("strait")) {
-    return `🔍 VERDICT: NO (Hormuz normal by Sep 1)\nCONFIDENCE: 72%\nREASONING: Iran wants to avoid full closure. Tanker traffic is 85% of normal. Diplomatic backchannels active.\nRISK: Sudden escalation after Israeli strike.\nBET SIZE: Medium ($5-20) – play the NO at 46¢.`;
-  }
-  if (lowerMsg.includes("oil") || lowerMsg.includes("wti")) {
-    return `VERDICT: YES (Oil above $90 before Aug 1)\nCONFIDENCE: 68%\nREASONING: OPEC+ cuts, summer driving season, geopolitical premium. Saudi needs $90+ for budget.\nRISK: Demand destruction if recession hits.\nBET SIZE: Small ($1-5) – Yes at 41¢ offers +EV.`;
-  }
-  if (lowerMsg.includes("bitcoin") || lowerMsg.includes("btc")) {
-    return `VERDICT: YES (BTC > $100k before Aug 2026)\nCONFIDENCE: 58%\nREASONING: Halving effects lag, institutional flows (ETF), and rate cuts expected mid-2026.\nRISK: Regulatory crackdown or macro crash.\nBET SIZE: Small – odds at 44¢ are fair, wait for a dip to 38¢.`;
-  }
-  if (lowerMsg.includes("nba") || lowerMsg.includes("spurs") || lowerMsg.includes("knicks")) {
-    return `VERDICT: NO (Spurs won't win 2026 title)\nCONFIDENCE: 82%\nREASONING: Too young, West is stacked. Odds at 62¢ are overvalued.\nRISK: Wemby becomes unstoppable.\nBET SIZE: Medium – sell the hype, play NO at 38¢.`;
-  }
-  if (lowerMsg.includes("fed") || lowerMsg.includes("rate")) {
-    return `VERDICT: YES (Fed cuts before Sep 2026)\nCONFIDENCE: 74%\nREASONING: Inflation trending down to 2.4%, unemployment up to 4.1%. Powell signals cuts.\nRISK: Services inflation sticky.\nBET SIZE: Medium – Yes at 48¢ is good value.`;
-  }
-  return `🔍 ANALYSIS\nVERDICT: Lean YES based on current data.\nCONFIDENCE: 65%\nREASONING: Market sentiment and fundamentals align. Volume confirms interest.\nRISK: Unexpected headline risk.\nBET SIZE: Small to Medium. Monitor for entry.`;
-}
-
-// ----- MODAL -----
-const CallModal = ({ isOpen, onClose, onSave, initialCall }) => {
-  const [form, setForm] = useState({id:null,title:"",category:"Crypto",myCall:"YES",confidence:70,notes:"",outcome:"pending",source:"",date:new Date().toLocaleDateString()});
-  useEffect(() => {
-    if (isOpen) setForm(initialCall ? {...initialCall} : {id:null,title:"",category:"Crypto",myCall:"YES",confidence:70,notes:"",outcome:"pending",source:"",date:new Date().toLocaleDateString()});
-  }, [initialCall, isOpen]);
-  if (!isOpen) return null;
-  const handleChange = e => setForm({...form, [e.target.name]: e.target.value});
-  const handleSubmit = () => {
-    if (!form.title.trim()) return;
-    onSave({...form, id: form.id || Date.now(), title: form.title.trim()});
-    onClose();
-  };
-  return (
-    <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.92)',backdropFilter:'blur(6px)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:1000,padding:16}} onClick={onClose}>
-      <div style={{background:'#101014',border:'1px solid #2a2a2e',borderRadius:32,width:'100%',maxWidth:520,padding:28}} onClick={e=>e.stopPropagation()}>
-        <h3 style={{fontSize:24,fontWeight:700,marginBottom:20}}>{initialCall ? '✏️ Edit prediction' : '➕ New prediction'}</h3>
-        <div style={{display:'flex',flexDirection:'column',gap:16}}>
-          <input name="title" placeholder="Prediction title *" value={form.title} onChange={handleChange} style={{background:'#1a1a20',border:'1px solid #2e2e36',borderRadius:20,padding:'12px 16px',color:'white',fontSize:14}}/>
-          <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
-            <select name="category" value={form.category} onChange={handleChange} style={{flex:1,background:'#1a1a20',border:'1px solid #2e2e36',borderRadius:20,padding:'12px',color:'white'}}>
-              {CATEGORIES.map(c=><option key={c}>{c}</option>)}
-            </select>
-            <select name="myCall" value={form.myCall} onChange={handleChange} style={{flex:1,background:'#1a1a20',border:'1px solid #2e2e36',borderRadius:20,padding:'12px',color:'white'}}>
-              <option>YES</option><option>NO</option>
-            </select>
-          </div>
-          <div>
-            <label style={{fontSize:12,color:'#aaa',marginBottom:6,display:'block'}}>Confidence: {form.confidence}%</label>
-            <input name="confidence" type="range" min="0" max="100" value={form.confidence} onChange={handleChange} style={{width:'100%'}}/>
-          </div>
-          <select name="outcome" value={form.outcome} onChange={handleChange} style={{background:'#1a1a20',border:'1px solid #2e2e36',borderRadius:20,padding:'12px',color:'white'}}>
-            <option value="pending">⏳ Pending</option>
-            <option value="correct">✅ Correct</option>
-            <option value="incorrect">❌ Incorrect</option>
-          </select>
-          <input name="source" placeholder="Source URL (optional)" value={form.source} onChange={handleChange} style={{background:'#1a1a20',border:'1px solid #2e2e36',borderRadius:20,padding:'12px 16px',color:'white',fontSize:13}}/>
-          <textarea name="notes" placeholder="Notes / thesis ..." rows="2" value={form.notes} onChange={handleChange} style={{background:'#1a1a20',border:'1px solid #2e2e36',borderRadius:20,padding:'12px',color:'white',fontSize:13,resize:'vertical'}}/>
-        </div>
-        <div style={{display:'flex',gap:12,marginTop:28,justifyContent:'flex-end'}}>
-          <button onClick={onClose} style={{background:'#1f1f26',border:'none',borderRadius:40,padding:'10px 18px',color:'#bbb'}}>Cancel</button>
-          <button onClick={handleSubmit} style={{background:'#a78bfa',border:'none',borderRadius:40,padding:'10px 22px',color:'#000',fontWeight:600}}>Save →</button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// ----- STAT BAR -----
-const StatBar = ({calls}) => {
-  const total = calls.length;
-  const graded = calls.filter(c=>c.outcome==="correct"||c.outcome==="incorrect");
-  const correctCount = calls.filter(c=>c.outcome==="correct").length;
-  const winPercent = graded.length ? Math.round((correctCount/graded.length)*100) : null;
-  const pending = calls.filter(c=>c.outcome==="pending").length;
-  return (
-    <div className="stat-grid" style={{marginBottom:28}}>
-      {[
-        {label:"TOTAL",val:total,color:"#fff"},
-        {label:"WIN %",val:winPercent!=null?`${winPercent}%`:"—",color:winPercent>=60?"#00ff9d":winPercent<40&&winPercent!==null?"#ff4d6d":"#ffd166"},
-        {label:"✅ CORRECT",val:correctCount,color:"#00ff9d"},
-        {label:"⏳ PENDING",val:pending,color:"#ffd166"},
-      ].map(stat=>(
-        <div key={stat.label} style={{background:'#0c0c10',borderRadius:24,padding:'14px 0',textAlign:'center',border:'1px solid #1e1e24'}}>
-          <div style={{fontSize:28,fontWeight:800,color:stat.color,letterSpacing:'-0.5px'}}>{stat.val}</div>
-          <div style={{fontSize:10,color:'#5a5a6e',marginTop:4,letterSpacing:'1px'}}>{stat.label}</div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-// ----- MY CALLS TAB -----
-const MyCallsTab = ({calls, onEdit, onDelete, onUpdateOutcome}) => {
-  const [filterCat, setFilterCat] = useState("All");
-  const filtered = filterCat==="All" ? calls : calls.filter(c=>c.category===filterCat);
-  return (
-    <div>
-      <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:24}}>
-        {["All",...CATEGORIES].map(cat=>(
-          <button key={cat} onClick={()=>setFilterCat(cat)} style={{background:filterCat===cat?categoryColor(cat==="All"?"#fff":cat):"#16161c",border:'none',borderRadius:40,padding:'6px 16px',color:filterCat===cat?"#000":"#ccc",fontWeight:500,fontSize:13}}>{cat}</button>
-        ))}
-      </div>
-      {filtered.length===0 && <div style={{textAlign:'center',color:'#555',padding:48}}>✨ No predictions yet — add your first call</div>}
-      <div style={{display:'flex',flexDirection:'column',gap:16}}>
-        {filtered.map(call=>(
-          <div key={call.id} style={{background:'#0e0e12',borderRadius:24,padding:18,border:'1px solid #26262c'}}>
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',flexWrap:'wrap',gap:8}}>
-              <div>
-                <span style={{background:categoryColor(call.category)+'20',color:categoryColor(call.category),borderRadius:40,padding:'4px 12px',fontSize:11,fontWeight:600}}>{call.category}</span>
-                <div style={{fontSize:18,fontWeight:700,marginTop:8}}>{call.title} <span style={{fontSize:14,color:'#b9b9e6'}}>• {call.myCall}</span></div>
-              </div>
-              <div style={{display:'flex',gap:8,alignItems:'center'}}>
-                <select value={call.outcome} onChange={e=>onUpdateOutcome(call.id,e.target.value)} style={{background:'#1d1d24',border:'1px solid #2f2f3a',borderRadius:40,padding:'6px 12px',color:'white',fontSize:12}}>
-                  <option value="pending">⏳ Pending</option><option value="correct">✅ Correct</option><option value="incorrect">❌ Incorrect</option>
-                </select>
-                <button onClick={()=>onEdit(call)} style={{background:'#282832',border:'none',borderRadius:30,padding:'6px 12px',fontSize:12}}>✏️</button>
-                <button onClick={()=>onDelete(call.id)} style={{background:'#2a1a1f',border:'none',borderRadius:30,padding:'6px 12px',color:'#ff8a8a'}}>🗑️</button>
-              </div>
-            </div>
-            <div style={{marginTop:14}}>
-              <div style={{display:'flex',justifyContent:'space-between',fontSize:12,marginBottom:4}}><span>Confidence</span><span>{call.confidence}%</span></div>
-              <div className="confidence-bar"><div className="confidence-fill" style={{width:`${call.confidence}%`}}></div></div>
-            </div>
-            {call.notes && <div style={{fontSize:13,color:'#ababb5',marginTop:12,borderLeft:'2px solid #2c2c34',paddingLeft:12}}>{call.notes}</div>}
-            {call.source && <div style={{fontSize:11,marginTop:10}}><a href={call.source} target="_blank" style={{color:'#a78bfa',textDecoration:'none'}}>🔗 source</a></div>}
-            <div style={{fontSize:10,color:'#5f5f73',marginTop:10}}>📅 {call.date}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// ----- KALSHI TAB -----
-const KalshiTab = () => {
-  const [markets, setMarkets] = useState(KALSHI_MARKETS);
-  const [selected, setSelected] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [analysis, setAnalysis] = useState("");
-  const [query, setQuery] = useState("");
-  const [queryLoading, setQueryLoading] = useState(false);
-  const [queryResult, setQueryResult] = useState("");
-
-  async function deepDive(m) {
-    setSelected(m);
-    setLoading(true);
-    setAnalysis("");
-    try {
-      const text = await callClaude(`Market: ${m.title} | Odds: ${m.odds}¢ | Category: ${m.cat}`);
-      setAnalysis(text);
-    } catch(e) { setAnalysis("Error fetching analysis. Try again."); }
-    setLoading(false);
-  }
-
-  async function askQuestion() {
-    if (!query.trim()) return;
-    setQueryLoading(true);
-    setQueryResult("");
-    try {
-      const text = await callClaude(`User question: ${query}`);
-      setQueryResult(text);
-    } catch(e) { setQueryResult("Error. Try again."); }
-    setQueryLoading(false);
-  }
-
-  return (
-    <div>
-      <div style={{background:'#0c0c12',border:'1px solid #1e1e2a',borderRadius:20,padding:16,marginBottom:24}}>
-        <div style={{fontSize:11,color:'#a78bfa',letterSpacing:2,marginBottom:10}}>ASK KALSHI AI · LIVE SEARCH</div>
-        <div style={{display:'flex',gap:8}}>
-          <input value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>e.key==='Enter'&&askQuestion()} placeholder="e.g. Will Hormuz normalize by Oct? NBA Finals winner? Oil above $85?" style={{flex:1,background:'#16161e',border:'1px solid #2a2a34',borderRadius:14,padding:'10px 14px',color:'white',fontSize:13}}/>
-          <button onClick={askQuestion} disabled={queryLoading||!query.trim()} style={{background:queryLoading?'#1a1a24':'#a78bfa',border:'none',borderRadius:14,padding:'10px 16px',color:'#000',fontWeight:700,fontSize:12,whiteSpace:'nowrap'}}>
-            {queryLoading ? "..." : "ANALYZE →"}
-          </button>
-        </div>
-        {queryResult && (
-          <div className="ai-result" style={{marginTop:12,padding:14,background:'#080810',border:'1px solid #2a2a3a',borderRadius:14,fontSize:13,color:'#ccc',lineHeight:1.7,whiteSpace:'pre-wrap'}}>
-            <div style={{fontSize:10,color:'#a78bfa',letterSpacing:2,marginBottom:8}}>AI ANALYSIS · LIVE DATA</div>
-            {queryResult}
-          </div>
-        )}
-      </div>
-
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
-        <h3 style={{fontWeight:600}}>🎯 Kalshi Markets</h3>
-        <a href="https://kalshi.com" target="_blank" style={{color:'#a78bfa',fontSize:12,textDecoration:'none'}}>Open Kalshi →</a>
-      </div>
-      <div style={{display:'flex',flexDirection:'column',gap:12}}>
-        {markets.map(m => {
-          const ec = EDGE_STYLE[m.edge] || EDGE_STYLE["FAIR"];
-          const isSel = selected?.id === m.id;
-          return (
-            <div key={m.id} style={{background:'#0b0b0f',borderRadius:20,border:`1px solid ${isSel?ec.border:'#1e1e26'}`,overflow:'hidden',transition:'0.2s',boxShadow:isSel?`0 0 16px ${ec.border}33`:'none'}}>
-              <div style={{padding:16}}>
-                <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:8}}>
-                  <div style={{flex:1}}>
-                    <div style={{display:'flex',gap:8,marginBottom:8,flexWrap:'wrap',alignItems:'center'}}>
-                      <span style={{fontSize:10,padding:'2px 10px',borderRadius:20,background:ec.bg,border:`1px solid ${ec.border}`,color:ec.text,fontWeight:700,letterSpacing:1}}>{m.edge}</span>
-                      <span style={{fontSize:10,color:'#555',letterSpacing:1}}>{m.cat.toUpperCase()}</span>
-                      <span style={{fontSize:10,background:'#191920',padding:'2px 8px',borderRadius:20,color:'#888'}}>{m.vol}</span>
-                    </div>
-                    <div style={{fontWeight:600,fontSize:15,lineHeight:1.3,marginBottom:4}}>{m.title}</div>
-                  </div>
-                  <div style={{textAlign:'right',flexShrink:0}}>
-                    <div style={{fontSize:20,fontWeight:800,color:m.pick==="YES"?"#00ff9d":"#ff4d6d"}}>{m.pick}</div>
-                    <div style={{fontSize:11,color:'#555'}}>{m.odds}¢ YES</div>
-                  </div>
-                </div>
-                <div style={{display:'flex',gap:8,marginTop:8}}>
-                  <button onClick={()=>deepDive(m)} style={{flex:1,padding:'9px',background:isSel?ec.bg:'#141418',border:`1px solid ${isSel?ec.border:'#2a2a34'}`,borderRadius:12,color:isSel?ec.text:'#888',fontSize:11,letterSpacing:1}}>
-                    {loading&&isSel ? "⟳ SEARCHING..." : "→ AI DEEP DIVE"}
-                  </button>
-                  <a href={m.url} target="_blank" style={{padding:'9px 14px',background:'#141418',border:'1px solid #2a2a34',borderRadius:12,color:'#a78bfa',fontSize:11,textDecoration:'none',display:'flex',alignItems:'center'}}>KALSHI ↗</a>
-                </div>
-              </div>
-              {isSel && analysis && (
-                <div className="ai-result" style={{borderTop:`1px solid ${ec.border}33`,padding:16,background:'#070710'}}>
-                  <div style={{fontSize:10,color:ec.text,letterSpacing:2,marginBottom:10}}>◆ AI DEEP DIVE · LIVE SEARCH</div>
-                  <div style={{fontSize:13,color:'#bbb',lineHeight:1.8,whiteSpace:'pre-wrap'}}>{analysis}</div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-// ----- POLYMARKET TAB -----
-const MarketsTab = () => {
-  const [markets, setMarkets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  const fetchMarkets = useCallback(async () => {
-    setLoading(true);
-    setError(false);
-    try {
-      const res = await fetch("https://corsproxy.io/?url=https://gamma-api.polymarket.com/markets?closed=false&limit=20&order=volume&ascending=false");
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        const formatted = data.slice(0,20).map(m => {
-          let yesOdds = 0.5;
-          try {
-            if (m.outcomePrices) { const p = JSON.parse(m.outcomePrices); if(p[0]) yesOdds = parseFloat(p[0]); }
-            else if (m.yesBid) yesOdds = parseFloat(m.yesBid);
-          } catch(e) {}
-          const volume = m.volume24hr ? parseFloat(m.volume24hr) : (m.volume ? parseFloat(m.volume) : 0);
-          return { id: m.id||m.marketId, question: m.question||"Polymarket", odds: (yesOdds*100).toFixed(1), volume, url: `https://polymarket.com/market/${m.slug||m.id}` };
-        });
-        setMarkets(formatted);
-      } else setError(true);
-    } catch(err) { setError(true); }
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { fetchMarkets(); }, []);
-
-  return (
-    <div>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:18}}>
-        <h3 style={{fontWeight:600}}>📊 Polymarket volume leaders</h3>
-        <button onClick={fetchMarkets} style={{background:'#1e1e26',border:'none',borderRadius:30,padding:'6px 14px',fontSize:12,color:'#ccc'}}>⟳ refresh</button>
-      </div>
-      {loading && <div style={{textAlign:'center',padding:40,color:'#777'}}>loading live odds ...</div>}
-      {error && <div style={{textAlign:'center',padding:40,color:'#ff6b6b',fontSize:13}}>⚠️ Could not load Polymarket data.<br/><span style={{color:'#666'}}>CORS restrictions may apply. <a href="https://polymarket.com" target="_blank" style={{color:'#a78bfa'}}>Open Polymarket →</a></span></div>}
-      <div style={{display:'flex',flexDirection:'column',gap:12}}>
-        {markets.map(m=>(
-          <a key={m.id} href={m.url} target="_blank" rel="noopener noreferrer" style={{textDecoration:'none'}}>
-            <div style={{background:'#0b0b0f',borderRadius:20,padding:'14px 18px',border:'1px solid #222',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
-              <div style={{flex:2,fontWeight:500,fontSize:15,color:'#f0f0ff'}}>{m.question}</div>
-              <div style={{display:'flex',gap:16,alignItems:'center'}}>
-                <span style={{fontFamily:'DM Mono',fontWeight:600,fontSize:18,color:'#c084fc'}}>{m.odds}%</span>
-                <span style={{fontSize:12,background:'#191920',padding:'4px 10px',borderRadius:40,color:'#aaa'}}>{formatVolume(m.volume)}</span>
-              </div>
-            </div>
-          </a>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// ----- STOCKS TAB -----
-const StocksTab = () => {
-  const [quotes, setQuotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchAllStocks = async () => {
-    setLoading(true);
-    const results = [];
-    for (const item of WATCH_TICKERS) {
-      try {
-        const res = await fetch(YF_PROXY(item.sym));
-        const json = await res.json();
-        const chart = json.chart?.result?.[0];
-        if (chart) {
-          const meta = chart.meta;
-          const current = meta.regularMarketPrice;
-          const prevClose = meta.previousClose;
-          const change = current - prevClose;
-          const changePercent = (change / prevClose) * 100;
-          results.push({...item, price:current, change, changePercent});
-        } else results.push({...item, price:null, change:null});
-      } catch(err) { results.push({...item, price:null, change:null}); }
-    }
-    setQuotes(results);
-    setLoading(false);
-  };
-
-  useEffect(() => { fetchAllStocks(); }, []);
-
-  return (
-    <div>
-      <div style={{display:'flex',justifyContent:'space-between',marginBottom:20}}>
-        <h3 style={{fontWeight:600}}>📈 Watchlist & prices</h3>
-        <button onClick={fetchAllStocks} style={{background:'#1e1e2a',border:'none',borderRadius:30,padding:'6px 14px',color:'#ccc',fontSize:12}}>🔄 update</button>
-      </div>
-      {loading && <div style={{padding:40,textAlign:'center',color:'#777'}}>fetching live market data ...</div>}
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill, minmax(200px,1fr))',gap:12}}>
-        {quotes.map(q=>(
-          <div key={q.sym} style={{background:'#0c0c10',borderRadius:20,padding:14,border:'1px solid #24242c'}}>
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-              <span style={{fontWeight:700,fontSize:15}}>{q.label}</span>
-              <span style={{fontSize:10,background:'#19191f',padding:'2px 8px',borderRadius:20,color:'#666'}}>{q.sym}</span>
-            </div>
-            <div style={{fontSize:22,fontWeight:600,marginTop:8}}>{q.price!=null?`$${q.price.toFixed(2)}`:'—'}</div>
-            {q.change!=null && (
-              <div style={{fontSize:14,color:q.change>=0?'#1db954':'#ff5e6e',marginTop:4}}>
-                {q.change>=0?'▲':'▼'} {Math.abs(q.change).toFixed(2)} ({q.changePercent.toFixed(2)}%)
-              </div>
-            )}
-            <div style={{fontSize:10,color:'#6e6e86',marginTop:8}}>{q.cat}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// ----- AI TAB -----
-const AITab = ({calls}) => {
-  const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState("");
-  const total = calls.length;
-  const correct = calls.filter(c=>c.outcome==="correct").length;
-  const pending = calls.filter(c=>c.outcome==="pending").length;
-  const graded = calls.filter(c=>c.outcome==="correct"||c.outcome==="incorrect").length;
-  const accuracy = graded ? ((correct/graded)*100).toFixed(0) : null;
-
-  async function analyze() {
-    if (!query.trim()) return;
-    setLoading(true);
-    setResult("");
-    try {
-      const text = await callClaude(`User has ${total} total predictions, ${correct} correct, ${accuracy ? accuracy+"% win rate" : "ungraded"}, ${pending} pending. Question: "${query}"`);
-      setResult(text);
-    } catch(e) { setResult("Error. Try again."); }
-    setLoading(false);
-  }
-
-  return (
-    <div style={{padding:'8px 0'}}>
-      <div style={{background:'linear-gradient(135deg,#0b0b1a,#101018)',borderRadius:36,padding:28,border:'1px solid #2a2a36',marginBottom:24}}>
-        <div style={{fontSize:42,marginBottom:12}}>🤖</div>
-        <div style={{fontSize:22,fontWeight:800,marginBottom:4}}>BEV·AI</div>
-        <p style={{color:'#bcbce6',fontSize:13}}>Your personal prediction market analyst. Ask anything about Kalshi, Polymarket, stocks, geopolitics, energy.</p>
-        <div style={{background:'#00000055',borderRadius:28,marginTop:20,padding:20}}>
-          <div style={{fontWeight:600,marginBottom:12,fontSize:14}}>📋 Your edge snapshot</div>
-          <div style={{display:'flex',gap:24,flexWrap:'wrap'}}>
-            <div><span style={{color:'#a78bfa',fontSize:12}}>Calls tracked</span><br/><span style={{fontSize:28,fontWeight:800}}>{total}</span></div>
-            <div><span style={{color:'#00ff9d',fontSize:12}}>Win rate</span><br/><span style={{fontSize:28,fontWeight:800}}>{accuracy?`${accuracy}%`:"—"}</span></div>
-            <div><span style={{color:'#ffd166',fontSize:12}}>Pending</span><br/><span style={{fontSize:28,fontWeight:800}}>{pending}</span></div>
-          </div>
-        </div>
-      </div>
-      <div style={{background:'#0c0c12',border:'1px solid #1e1e2a',borderRadius:20,padding:16}}>
-        <div style={{fontSize:11,color:'#a78bfa',letterSpacing:2,marginBottom:10}}>ASK BEV·AI · LIVE SEARCH</div>
-        <div style={{display:'flex',gap:8,marginBottom:result?12:0}}>
-          <input value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>e.key==='Enter'&&analyze()} placeholder="Will Hormuz normalize? Oil price prediction? NBA Finals? Best Kalshi bet today?" style={{flex:1,background:'#16161e',border:'1px solid #2a2a34',borderRadius:14,padding:'12px 14px',color:'white',fontSize:13}}/>
-          <button onClick={analyze} disabled={loading||!query.trim()} style={{background:loading?'#1a1a24':'#a78bfa',border:'none',borderRadius:14,padding:'12px 18px',color:'#000',fontWeight:700,fontSize:13}}>
-            {loading?"...":"→"}
-          </button>
-        </div>
-        {result && (
-          <div className="ai-result" style={{padding:16,background:'#080810',border:'1px solid #2a2a3a',borderRadius:14,fontSize:13,color:'#ccc',lineHeight:1.8,whiteSpace:'pre-wrap'}}>
-            <div style={{fontSize:10,color:'#a78bfa',letterSpacing:2,marginBottom:8}}>BEV·AI ANALYSIS · LIVE DATA</div>
-            {result}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// ----- MAIN APP -----
-const INITIAL_CALLS = [
+let calls = [
   {id:1001,title:"BTC > $70k by June 2025",category:"Crypto",myCall:"YES",confidence:82,notes:"ETF inflows + halving cycle",outcome:"pending",date:"Apr 12, 2025",source:""},
   {id:1002,title:"Fed cuts rates in Sept",category:"Politics",myCall:"YES",confidence:65,notes:"Inflation cooling",outcome:"pending",date:"Apr 10, 2025",source:""},
   {id:1003,title:"Oil stays above $80",category:"Energy/Gas",myCall:"YES",confidence:73,notes:"OPEC cuts",outcome:"correct",date:"Mar 28, 2025",source:""},
 ];
+let editId = null;
+let activeFilter = "All";
+let selectedKalshi = null;
+let kalshiAnalyses = {};
 
-const PredictionHub = () => {
-  const [activeTab, setActiveTab] = useState("mycalls");
-  const [calls, setCalls] = useState(INITIAL_CALLS);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingCall, setEditingCall] = useState(null);
+// ---- AI MOCK ----
+function aiAnalyze(msg) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const m = msg.toLowerCase();
+      if(m.includes("hormuz")||m.includes("strait")) resolve("🔍 VERDICT: NO (Hormuz normal by Sep 1)\nCONFIDENCE: 72%\nREASONING: Iran wants to avoid full closure. Tanker traffic is 85% of normal. Diplomatic backchannels active.\nRISK: Sudden escalation after Israeli strike.\nBET SIZE: Medium ($5-20) – play the NO at 46¢.");
+      else if(m.includes("oil")||m.includes("wti")) resolve("VERDICT: YES (Oil above $90 before Aug 1)\nCONFIDENCE: 68%\nREASONING: OPEC+ cuts, summer driving season, geopolitical premium. Saudi needs $90+ for budget.\nRISK: Demand destruction if recession hits.\nBET SIZE: Small ($1-5) – Yes at 41¢ offers +EV.");
+      else if(m.includes("bitcoin")||m.includes("btc")) resolve("VERDICT: YES (BTC > $100k before Aug 2026)\nCONFIDENCE: 58%\nREASONING: Halving effects lag, institutional flows (ETF), and rate cuts expected mid-2026.\nRISK: Regulatory crackdown or macro crash.\nBET SIZE: Small – odds at 44¢ are fair, wait for a dip to 38¢.");
+      else if(m.includes("nba")||m.includes("spurs")||m.includes("knicks")) resolve("VERDICT: NO (Spurs won't win 2026 title)\nCONFIDENCE: 82%\nREASONING: Too young, West is stacked. Odds at 62¢ are overvalued.\nRISK: Wemby becomes unstoppable.\nBET SIZE: Medium – sell the hype, play NO at 38¢.");
+      else if(m.includes("fed")||m.includes("rate")) resolve("VERDICT: YES (Fed cuts before Sep 2026)\nCONFIDENCE: 74%\nREASONING: Inflation trending down to 2.4%, unemployment up to 4.1%. Powell signals cuts.\nRISK: Services inflation sticky.\nBET SIZE: Medium – Yes at 48¢ is good value.");
+      else resolve("🔍 ANALYSIS\nVERDICT: Lean YES based on current data.\nCONFIDENCE: 65%\nREASONING: Market sentiment and fundamentals align. Volume confirms interest.\nRISK: Unexpected headline risk.\nBET SIZE: Small to Medium. Monitor for entry.");
+    }, 700 + Math.random()*300);
+  });
+}
 
-  const addOrUpdateCall = (callData) => {
-    if (callData.id && calls.find(c=>c.id===callData.id)) {
-      setCalls(prev=>prev.map(c=>c.id===callData.id?callData:c));
-    } else {
-      setCalls(prev=>[callData,...prev]);
-    }
-  };
-  const deleteCall = (id) => setCalls(prev=>prev.filter(c=>c.id!==id));
-  const updateOutcome = (id, outcome) => setCalls(prev=>prev.map(c=>c.id===id?{...c,outcome}:c));
-  const openEdit = (call) => { setEditingCall(call); setModalOpen(true); };
-  const openAdd = () => { setEditingCall(null); setModalOpen(true); };
+function fmtVol(v) {
+  if(!v) return "—";
+  if(v>=1e6) return "$"+(v/1e6).toFixed(1)+"M";
+  if(v>=1e3) return "$"+(v/1e3).toFixed(0)+"K";
+  return "$"+v;
+}
 
-  const TABS = [
-    {id:'mycalls',label:'📋 My Calls'},
-    {id:'kalshi',label:'🎯 Kalshi'},
-    {id:'markets',label:'🎲 Polymarket'},
-    {id:'stocks',label:'📈 Stocks'},
-    {id:'ai',label:'🤖 BEV·AI'},
-  ];
+// ---- STATS ----
+function renderStats() {
+  const total = calls.length;
+  const correct = calls.filter(c=>c.outcome==="correct").length;
+  const pending = calls.filter(c=>c.outcome==="pending").length;
+  const graded = calls.filter(c=>c.outcome==="correct"||c.outcome==="incorrect").length;
+  const win = graded ? Math.round(correct/graded*100) : null;
+  const winColor = win===null?"#ffd166":win>=60?"#00ff9d":win<40?"#ff4d6d":"#ffd166";
+  document.getElementById("statGrid").innerHTML = [
+    {l:"TOTAL",v:total,c:"#fff"},
+    {l:"WIN %",v:win!==null?win+"%":"—",c:winColor},
+    {l:"✅ CORRECT",v:correct,c:"#00ff9d"},
+    {l:"⏳ PENDING",v:pending,c:"#ffd166"},
+  ].map(s=>`<div class="stat-card"><div class="stat-val" style="color:${s.c}">${s.v}</div><div class="stat-label">${s.l}</div></div>`).join("");
+}
 
-  return (
-    <div style={{maxWidth:1280,margin:'0 auto'}}>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',marginBottom:28,flexWrap:'wrap',gap:12}}>
+// ---- TABS ----
+function switchTab(name, btn) {
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  btn.classList.add("active");
+  ["mycalls","kalshi","markets","stocks","ai"].forEach(p=>{
+    const el = document.getElementById("panel-"+p);
+    if(el) el.classList.toggle("hidden", p!==name);
+  });
+  if(name==="kalshi") renderKalshi();
+  if(name==="markets") renderMarkets();
+  if(name==="stocks") renderStocks();
+  if(name==="ai") renderAI();
+}
+
+// ---- MY CALLS ----
+function renderCalls() {
+  const filtered = activeFilter==="All" ? calls : calls.filter(c=>c.category===activeFilter);
+  const cats = ["All","Crypto","Politics","Energy/Gas","Geopolitics","Stocks","Other","Sports"];
+  let html = `<div class="filter-bar">`;
+  cats.forEach(cat => {
+    const color = cat==="All" ? "#a78bfa" : (CAT_COLOR[cat]||"#aaa");
+    const isActive = activeFilter===cat;
+    html += `<button class="filt-btn${isActive?" active":""}" style="${isActive?"background:"+color+";color:#000":""}" onclick="setFilter('${cat}')">${cat}</button>`;
+  });
+  html += `</div>`;
+  if(!filtered.length) { html += `<div class="empty">✨ No predictions yet — add your first call</div>`; }
+  filtered.forEach(call => {
+    const color = CAT_COLOR[call.category]||"#aaa";
+    html += `<div class="call-card">
+      <div class="call-top">
         <div>
-          <h1 style={{fontSize:'2rem',fontWeight:800,letterSpacing:'-1px',background:'linear-gradient(135deg,#fff,#c6aaff)',WebkitBackgroundClip:'text',backgroundClip:'text',color:'transparent'}}>PREDICTION HUB</h1>
-          <p style={{color:'#9292aa',fontSize:13,marginTop:4}}>SAINT BEV · track your market edge</p>
+          <span class="call-tag" style="background:${color}20;color:${color}">${call.category}</span>
+          <div class="call-title">${call.title} <span style="font-size:13px;color:#b9b9e6">• ${call.myCall}</span></div>
         </div>
-        <button onClick={openAdd} style={{background:'#a78bfa',border:'none',borderRadius:60,padding:'10px 24px',fontWeight:700,color:'#000',fontSize:14}}>+ New call</button>
+        <div class="call-actions">
+          <select onchange="updateOutcome(${call.id},this.value)">
+            <option value="pending"${call.outcome==="pending"?" selected":""}>⏳ Pending</option>
+            <option value="correct"${call.outcome==="correct"?" selected":""}>✅ Correct</option>
+            <option value="incorrect"${call.outcome==="incorrect"?" selected":""}>❌ Incorrect</option>
+          </select>
+          <button class="btn-icon" onclick="openEditModal(${call.id})">✏️</button>
+          <button class="btn-icon btn-del" onclick="deleteCall(${call.id})">🗑️</button>
+        </div>
       </div>
+      <div class="conf-label"><span>Confidence</span><span>${call.confidence}%</span></div>
+      <div class="conf-bar"><div class="conf-fill" style="width:${call.confidence}%"></div></div>
+      ${call.notes?`<div class="call-notes">${call.notes}</div>`:""}
+      ${call.source?`<div style="margin-top:8px;font-size:11px"><a href="${call.source}" target="_blank" style="color:#a78bfa;text-decoration:none">🔗 source</a></div>`:""}
+      <div class="call-date">📅 ${call.date}</div>
+    </div>`;
+  });
+  document.getElementById("panel-mycalls").innerHTML = html;
+}
+function setFilter(cat) { activeFilter=cat; renderCalls(); }
+function updateOutcome(id, val) {
+  calls = calls.map(c=>c.id===id?{...c,outcome:val}:c);
+  renderStats(); renderCalls();
+}
+function deleteCall(id) {
+  if(!confirm("Delete this prediction?")) return;
+  calls = calls.filter(c=>c.id!==id);
+  renderStats(); renderCalls();
+}
 
-      <StatBar calls={calls}/>
+// ---- MODAL ----
+function openModal() {
+  editId = null;
+  document.getElementById("modalTitle").textContent = "➕ New prediction";
+  document.getElementById("mTitle").value = "";
+  document.getElementById("mCategory").value = "Crypto";
+  document.getElementById("mCall").value = "YES";
+  document.getElementById("mConf").value = 70;
+  document.getElementById("confLabel").textContent = "Confidence: 70%";
+  document.getElementById("mOutcome").value = "pending";
+  document.getElementById("mSource").value = "";
+  document.getElementById("mNotes").value = "";
+  document.getElementById("modal").classList.remove("hidden");
+}
+function openEditModal(id) {
+  const c = calls.find(x=>x.id===id); if(!c) return;
+  editId = id;
+  document.getElementById("modalTitle").textContent = "✏️ Edit prediction";
+  document.getElementById("mTitle").value = c.title;
+  document.getElementById("mCategory").value = c.category;
+  document.getElementById("mCall").value = c.myCall;
+  document.getElementById("mConf").value = c.confidence;
+  document.getElementById("confLabel").textContent = "Confidence: "+c.confidence+"%";
+  document.getElementById("mOutcome").value = c.outcome;
+  document.getElementById("mSource").value = c.source||"";
+  document.getElementById("mNotes").value = c.notes||"";
+  document.getElementById("modal").classList.remove("hidden");
+}
+function closeModal() { document.getElementById("modal").classList.add("hidden"); }
+function closeModalOutside(e) { if(e.target===document.getElementById("modal")) closeModal(); }
+function saveCall() {
+  const title = document.getElementById("mTitle").value.trim();
+  if(!title) { alert("Add a title"); return; }
+  const data = {
+    title, category:document.getElementById("mCategory").value,
+    myCall:document.getElementById("mCall").value,
+    confidence:parseInt(document.getElementById("mConf").value),
+    outcome:document.getElementById("mOutcome").value,
+    source:document.getElementById("mSource").value.trim(),
+    notes:document.getElementById("mNotes").value.trim(),
+    date:new Date().toLocaleDateString()
+  };
+  if(editId) {
+    calls = calls.map(c=>c.id===editId?{...c,...data}:c);
+  } else {
+    calls.unshift({id:Date.now(),...data});
+  }
+  closeModal(); renderStats(); renderCalls();
+}
 
-      <div style={{display:'flex',gap:4,background:'#101014',borderRadius:60,padding:4,width:'fit-content',marginBottom:28,border:'1px solid #2a2a30',flexWrap:'wrap'}}>
-        {TABS.map(tab=>(
-          <button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{background:activeTab===tab.id?'#a78bfa':'transparent',color:activeTab===tab.id?'#000':'#ddd',border:'none',borderRadius:60,padding:'8px 18px',fontWeight:500,fontSize:13,transition:'0.2s'}}>
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="glass-card" style={{padding:'24px 20px',background:'#0a0a0e',borderRadius:32}}>
-        {activeTab==='mycalls' && <MyCallsTab calls={calls} onEdit={openEdit} onDelete={deleteCall} onUpdateOutcome={updateOutcome}/>}
-        {activeTab==='kalshi' && <KalshiTab/>}
-        {activeTab==='markets' && <MarketsTab/>}
-        {activeTab==='stocks' && <StocksTab/>}
-        {activeTab==='ai' && <AITab calls={calls}/>}
-      </div>
-
-      <CallModal isOpen={modalOpen} onClose={()=>{setModalOpen(false);setEditingCall(null);}} onSave={addOrUpdateCall} initialCall={editingCall}/>
+// ---- KALSHI ----
+function renderKalshi() {
+  let html = `<div class="ai-box">
+    <div class="ai-label">ASK KALSHI AI</div>
+    <div class="ai-input-row">
+      <input class="ai-input" id="kQuery" placeholder="Hormuz? NBA Finals? Oil above $85?" onkeydown="if(event.key==='Enter')askKalshi()">
+      <button class="btn-analyze" id="kBtn" onclick="askKalshi()">ANALYZE →</button>
     </div>
-  );
-};
+    <div id="kResult"></div>
+  </div>
+  <div class="k-header"><h3>🎯 Kalshi Markets</h3><a href="https://kalshi.com" target="_blank">Open Kalshi →</a></div>`;
+  KALSHI_MARKETS.forEach(m => {
+    const ec = EDGE_STYLE[m.edge]||EDGE_STYLE["FAIR"];
+    const isSel = selectedKalshi===m.id;
+    const pickColor = m.pick==="YES"?"#00ff9d":"#ff4d6d";
+    html += `<div class="k-card${isSel?" selected":""}" id="kcard-${m.id}" style="${isSel?"border-color:"+ec.border:""}">
+      <div class="k-inner">
+        <div class="k-row">
+          <div style="flex:1">
+            <div class="k-badges">
+              <span class="k-edge" style="background:${ec.bg};border:1px solid ${ec.border};color:${ec.text}">${m.edge}</span>
+              <span class="k-cat">${m.cat.toUpperCase()}</span>
+              <span class="k-vol">${m.vol}</span>
+            </div>
+            <div class="k-title">${m.title}</div>
+          </div>
+          <div class="k-right">
+            <div class="k-pick" style="color:${pickColor}">${m.pick}</div>
+            <div class="k-odds">${m.odds}¢ YES</div>
+          </div>
+        </div>
+        <div class="k-btns">
+          <button class="btn-dive" id="dive-${m.id}" style="${isSel?"background:"+ec.bg+";border-color:"+ec.border+";color:"+ec.text:""}" onclick="deepDive('${m.id}')">→ AI DEEP DIVE</button>
+          <a class="btn-kalshi" href="https://kalshi.com" target="_blank">KALSHI ↗</a>
+        </div>
+      </div>
+      <div id="analysis-${m.id}" style="display:none" class="k-analysis">
+        <div class="k-analysis-label" style="color:${ec.text}">◆ AI DEEP DIVE</div>
+        <div class="k-analysis-text"></div>
+      </div>
+    </div>`;
+  });
+  document.getElementById("panel-kalshi").innerHTML = html;
+  // restore cached analyses
+  KALSHI_MARKETS.forEach(m => {
+    if(kalshiAnalyses[m.id]) {
+      const el = document.getElementById("analysis-"+m.id);
+      if(el) { el.querySelector(".k-analysis-text").textContent = kalshiAnalyses[m.id]; el.style.display="block"; }
+    }
+  });
+}
+async function askKalshi() {
+  const q = document.getElementById("kQuery").value.trim();
+  if(!q) return;
+  const btn = document.getElementById("kBtn");
+  btn.disabled=true; btn.textContent="...";
+  const res = document.getElementById("kResult");
+  res.innerHTML="";
+  const text = await aiAnalyze(q);
+  res.innerHTML = `<div class="ai-result"><div class="ai-label">AI ANALYSIS</div>${text}</div>`;
+  btn.disabled=false; btn.textContent="ANALYZE →";
+}
+async function deepDive(id) {
+  const m = KALSHI_MARKETS.find(x=>x.id===id); if(!m) return;
+  selectedKalshi = id;
+  const btn = document.getElementById("dive-"+id);
+  const ec = EDGE_STYLE[m.edge]||EDGE_STYLE["FAIR"];
+  if(btn) { btn.textContent="⟳ SEARCHING..."; btn.style.background=ec.bg; btn.style.borderColor=ec.border; btn.style.color=ec.text; }
+  const card = document.getElementById("kcard-"+id);
+  if(card) { card.classList.add("selected"); card.style.borderColor=ec.border; card.style.boxShadow="0 0 16px "+ec.border+"33"; }
+  const text = await aiAnalyze("Market: "+m.title+" Odds: "+m.odds+"¢ Category: "+m.cat);
+  kalshiAnalyses[id] = text;
+  const analysisEl = document.getElementById("analysis-"+id);
+  if(analysisEl) { analysisEl.querySelector(".k-analysis-text").textContent=text; analysisEl.style.display="block"; }
+  if(btn) btn.textContent="→ AI DEEP DIVE";
+}
 
-// ---- RENDER (using legacy method for maximum compatibility) ----
-ReactDOM.render(<PredictionHub/>, document.getElementById("root"));
+// ---- POLYMARKET ----
+async function renderMarkets() {
+  document.getElementById("panel-markets").innerHTML = `
+    <div class="poly-header"><h3>📊 Polymarket volume leaders</h3><button class="btn-refresh" onclick="renderMarkets()">⟳ refresh</button></div>
+    <div id="polyList"><div class="loading">loading live odds ...</div></div>`;
+  try {
+    const res = await fetch("https://corsproxy.io/?url=https://gamma-api.polymarket.com/markets?closed=false&limit=20&order=volume&ascending=false");
+    const data = await res.json();
+    if(!Array.isArray(data)) throw new Error();
+    const markets = data.slice(0,20).map(m => {
+      let odds = 50;
+      try { if(m.outcomePrices){const p=JSON.parse(m.outcomePrices);if(p[0])odds=parseFloat(p[0])*100;} else if(m.yesBid) odds=parseFloat(m.yesBid)*100; } catch(e){}
+      const vol = m.volume24hr?parseFloat(m.volume24hr):(m.volume?parseFloat(m.volume):0);
+      const url = "https://polymarket.com/market/"+(m.slug||m.id);
+      return `<a class="poly-card" href="${url}" target="_blank">
+        <div class="poly-q">${m.question||"Polymarket"}</div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <span class="poly-odds">${odds.toFixed(1)}%</span>
+          <span class="poly-vol">${fmtVol(vol)}</span>
+        </div>
+      </a>`;
+    });
+    document.getElementById("polyList").innerHTML = markets.join("");
+  } catch(e) {
+    document.getElementById("polyList").innerHTML = `<div class="error-msg">⚠️ Could not load Polymarket data.<br><span style="color:#666">CORS may be blocking. <a href="https://polymarket.com" target="_blank" style="color:#a78bfa">Open Polymarket →</a></span></div>`;
+  }
+}
+
+// ---- STOCKS ----
+async function renderStocks() {
+  document.getElementById("panel-stocks").innerHTML = `
+    <div class="stocks-header"><h3>📈 Watchlist</h3><button class="btn-refresh" onclick="renderStocks()">🔄 update</button></div>
+    <div class="loading">fetching market data ...</div>`;
+  const results = [];
+  for(const item of WATCH_TICKERS) {
+    try {
+      const r = await fetch("https://corsproxy.io/?url=https://query1.finance.yahoo.com/v8/finance/chart/"+item.sym+"?interval=1d&range=5d");
+      const j = await r.json();
+      const meta = j.chart?.result?.[0]?.meta;
+      if(meta) {
+        const cur = meta.regularMarketPrice;
+        const prev = meta.previousClose;
+        const ch = cur-prev;
+        const pct = ch/prev*100;
+        results.push({...item,price:cur,change:ch,pct});
+      } else results.push({...item,price:null});
+    } catch(e) { results.push({...item,price:null}); }
+  }
+  let html = `<div class="stocks-header"><h3>📈 Watchlist</h3><button class="btn-refresh" onclick="renderStocks()">🔄 update</button></div><div class="stocks-grid">`;
+  results.forEach(q => {
+    const chColor = q.change>=0?"#1db954":"#ff5e6e";
+    html += `<div class="stock-card">
+      <div class="stock-top"><span class="stock-name">${q.label}</span><span class="stock-sym">${q.sym}</span></div>
+      <div class="stock-price">${q.price!=null?"$"+q.price.toFixed(2):"—"}</div>
+      ${q.change!=null?`<div class="stock-change" style="color:${chColor}">${q.change>=0?"▲":"▼"} ${Math.abs(q.change).toFixed(2)} (${q.pct.toFixed(2)}%)</div>`:""}
+      <div class="stock-cat">${q.cat}</div>
+    </div>`;
+  });
+  html += `</div>`;
+  document.getElementById("panel-stocks").innerHTML = html;
+}
+
+// ---- AI TAB ----
+function renderAI() {
+  const total=calls.length, correct=calls.filter(c=>c.outcome==="correct").length, pending=calls.filter(c=>c.outcome==="pending").length;
+  const graded=calls.filter(c=>c.outcome==="correct"||c.outcome==="incorrect").length;
+  const acc=graded?Math.round(correct/graded*100):null;
+  document.getElementById("panel-ai").innerHTML = `
+    <div class="ai-hero">
+      <div class="ai-icon">🤖</div>
+      <div class="ai-title">BEV·AI</div>
+      <p class="ai-desc">Your personal prediction market analyst. Ask anything about Kalshi, Polymarket, stocks, geopolitics, energy.</p>
+      <div class="ai-snapshot">
+        <div class="ai-snap-title">📋 Your edge snapshot</div>
+        <div class="ai-snap-stats">
+          <div class="ai-snap-stat"><span style="color:#a78bfa">Calls tracked</span><span>${total}</span></div>
+          <div class="ai-snap-stat"><span style="color:#00ff9d">Win rate</span><span>${acc!==null?acc+"%":"—"}</span></div>
+          <div class="ai-snap-stat"><span style="color:#ffd166">Pending</span><span>${pending}</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="ai-box">
+      <div class="ai-label">ASK BEV·AI</div>
+      <div class="ai-input-row">
+        <input class="ai-input" id="aiQuery" placeholder="Will Hormuz normalize? Oil price? NBA Finals? Best Kalshi bet?" onkeydown="if(event.key==='Enter')askAI()">
+        <button class="btn-analyze" id="aiBtn" onclick="askAI()">→</button>
+      </div>
+      <div id="aiResult"></div>
+    </div>`;
+}
+async function askAI() {
+  const q = document.getElementById("aiQuery").value.trim();
+  if(!q) return;
+  const btn = document.getElementById("aiBtn");
+  btn.disabled=true; btn.textContent="...";
+  document.getElementById("aiResult").innerHTML="";
+  const text = await aiAnalyze(q);
+  document.getElementById("aiResult").innerHTML = `<div class="ai-result"><div class="ai-label">BEV·AI ANALYSIS</div>${text}</div>`;
+  btn.disabled=false; btn.textContent="→";
+}
+
+// ---- INIT ----
+renderStats();
+renderCalls();
 </script>
 </body>
 </html>
