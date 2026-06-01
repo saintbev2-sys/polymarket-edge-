@@ -20,7 +20,6 @@
     .confidence-bar { height: 6px; background: #1e1e24; border-radius: 12px; overflow: hidden; }
     .confidence-fill { height: 100%; background: linear-gradient(90deg, #a78bfa, #c084fc); border-radius: 12px; }
     input, select, textarea { outline: none; }
-    @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     .ai-result { animation: fadeIn 0.3s ease; }
   </style>
@@ -28,12 +27,13 @@
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { useState, useEffect, useCallback, useRef } = React;
+const { useState, useEffect, useCallback } = React;
 
-const CATEGORIES = ["Crypto","Politics","Energy/Gas","Geopolitics","Stocks","Other"];
+// ----- CATEGORIES (including Sports for Kalshi) -----
+const CATEGORIES = ["Crypto","Politics","Energy/Gas","Geopolitics","Stocks","Other","Sports"];
 const categoryColor = (cat) => ({
   Crypto:"#f7931a", Politics:"#a78bfa", "Energy/Gas":"#fb923c",
-  Geopolitics:"#f43f5e", Stocks:"#34d399", Other:"#94a3b8"
+  Geopolitics:"#f43f5e", Stocks:"#34d399", Other:"#94a3b8", Sports:"#ff8c42"
 }[cat] || "#adb7be");
 
 const formatVolume = (vol) => {
@@ -75,59 +75,29 @@ const EDGE_STYLE = {
   "MONITOR": {bg:"#0a1a2a",border:"#0088cc",text:"#00aaff"},
 };
 
-// ---- MOCK AI (no API key needed, fully functional demo) ----
+// ----- AI: smart mock responses (never fails) -----
 async function callClaude(userMsg) {
-  // Simulate network delay
-  await new Promise(r => setTimeout(r, 800 + Math.random() * 400));
-  
-  // Smart mock responses based on keywords
+  await new Promise(r => setTimeout(r, 600 + Math.random() * 300));
   const lowerMsg = userMsg.toLowerCase();
   if (lowerMsg.includes("hormuz") || lowerMsg.includes("strait")) {
-    return `🔍 VERDICT: NO (Hormuz normal by Sep 1)
-CONFIDENCE: 72%
-REASONING: Iran wants to avoid full closure. Tanker traffic is 85% of normal. Diplomatic backchannels active.
-RISK: Sudden escalation after Israeli strike.
-BET SIZE: Medium ($5-20) – play the NO at 46¢.`;
+    return `🔍 VERDICT: NO (Hormuz normal by Sep 1)\nCONFIDENCE: 72%\nREASONING: Iran wants to avoid full closure. Tanker traffic is 85% of normal. Diplomatic backchannels active.\nRISK: Sudden escalation after Israeli strike.\nBET SIZE: Medium ($5-20) – play the NO at 46¢.`;
   }
   if (lowerMsg.includes("oil") || lowerMsg.includes("wti")) {
-    return `VERDICT: YES (Oil above $90 before Aug 1)
-CONFIDENCE: 68%
-REASONING: OPEC+ cuts, summer driving season, geopolitical premium. Saudi needs $90+ for budget.
-RISK: Demand destruction if recession hits.
-BET SIZE: Small ($1-5) – Yes at 41¢ offers +EV.`;
+    return `VERDICT: YES (Oil above $90 before Aug 1)\nCONFIDENCE: 68%\nREASONING: OPEC+ cuts, summer driving season, geopolitical premium. Saudi needs $90+ for budget.\nRISK: Demand destruction if recession hits.\nBET SIZE: Small ($1-5) – Yes at 41¢ offers +EV.`;
   }
   if (lowerMsg.includes("bitcoin") || lowerMsg.includes("btc")) {
-    return `VERDICT: YES (BTC > $100k before Aug 2026)
-CONFIDENCE: 58%
-REASONING: Halving effects lag, institutional flows (ETF), and rate cuts expected mid-2026.
-RISK: Regulatory crackdown or macro crash.
-BET SIZE: Small – odds at 44¢ are fair, wait for a dip to 38¢.`;
+    return `VERDICT: YES (BTC > $100k before Aug 2026)\nCONFIDENCE: 58%\nREASONING: Halving effects lag, institutional flows (ETF), and rate cuts expected mid-2026.\nRISK: Regulatory crackdown or macro crash.\nBET SIZE: Small – odds at 44¢ are fair, wait for a dip to 38¢.`;
   }
   if (lowerMsg.includes("nba") || lowerMsg.includes("spurs") || lowerMsg.includes("knicks")) {
-    return `VERDICT: NO (Spurs won't win 2026 title)
-CONFIDENCE: 82%
-REASONING: Too young, West is stacked. Odds at 62¢ are overvalued.  
-RISK: Wemby becomes unstoppable.
-BET SIZE: Medium – sell the hype, play NO at 38¢.`;
+    return `VERDICT: NO (Spurs won't win 2026 title)\nCONFIDENCE: 82%\nREASONING: Too young, West is stacked. Odds at 62¢ are overvalued.\nRISK: Wemby becomes unstoppable.\nBET SIZE: Medium – sell the hype, play NO at 38¢.`;
   }
   if (lowerMsg.includes("fed") || lowerMsg.includes("rate")) {
-    return `VERDICT: YES (Fed cuts before Sep 2026)
-CONFIDENCE: 74%
-REASONING: Inflation trending down to 2.4%, unemployment up to 4.1%. Powell signals cuts.
-RISK: Services inflation sticky.
-BET SIZE: Medium – Yes at 48¢ is good value.`;
+    return `VERDICT: YES (Fed cuts before Sep 2026)\nCONFIDENCE: 74%\nREASONING: Inflation trending down to 2.4%, unemployment up to 4.1%. Powell signals cuts.\nRISK: Services inflation sticky.\nBET SIZE: Medium – Yes at 48¢ is good value.`;
   }
-  
-  // Default sharp analysis
-  return `🔍 ANALYSIS
-VERDICT: Based on current data, lean YES.
-CONFIDENCE: 65%
-REASONING: Market sentiment and fundamentals align. Volume confirms interest.
-RISK: Unexpected headline risk.
-BET SIZE: Small to Medium. Monitor for entry.`;
+  return `🔍 ANALYSIS\nVERDICT: Lean YES based on current data.\nCONFIDENCE: 65%\nREASONING: Market sentiment and fundamentals align. Volume confirms interest.\nRISK: Unexpected headline risk.\nBET SIZE: Small to Medium. Monitor for entry.`;
 }
 
-// ---- MODAL (unchanged, perfect) ----
+// ----- MODAL -----
 const CallModal = ({ isOpen, onClose, onSave, initialCall }) => {
   const [form, setForm] = useState({id:null,title:"",category:"Crypto",myCall:"YES",confidence:70,notes:"",outcome:"pending",source:"",date:new Date().toLocaleDateString()});
   useEffect(() => {
@@ -175,7 +145,7 @@ const CallModal = ({ isOpen, onClose, onSave, initialCall }) => {
   );
 };
 
-// ---- STAT BAR ----
+// ----- STAT BAR -----
 const StatBar = ({calls}) => {
   const total = calls.length;
   const graded = calls.filter(c=>c.outcome==="correct"||c.outcome==="incorrect");
@@ -199,7 +169,7 @@ const StatBar = ({calls}) => {
   );
 };
 
-// ---- MY CALLS TAB ----
+// ----- MY CALLS TAB -----
 const MyCallsTab = ({calls, onEdit, onDelete, onUpdateOutcome}) => {
   const [filterCat, setFilterCat] = useState("All");
   const filtered = filterCat==="All" ? calls : calls.filter(c=>c.category===filterCat);
@@ -241,7 +211,7 @@ const MyCallsTab = ({calls, onEdit, onDelete, onUpdateOutcome}) => {
   );
 };
 
-// ---- KALSHI TAB (with mock AI) ----
+// ----- KALSHI TAB -----
 const KalshiTab = () => {
   const [markets, setMarkets] = useState(KALSHI_MARKETS);
   const [selected, setSelected] = useState(null);
@@ -258,9 +228,7 @@ const KalshiTab = () => {
     try {
       const text = await callClaude(`Market: ${m.title} | Odds: ${m.odds}¢ | Category: ${m.cat}`);
       setAnalysis(text);
-    } catch(e) {
-      setAnalysis("Error fetching analysis. Try again.");
-    }
+    } catch(e) { setAnalysis("Error fetching analysis. Try again."); }
     setLoading(false);
   }
 
@@ -271,9 +239,7 @@ const KalshiTab = () => {
     try {
       const text = await callClaude(`User question: ${query}`);
       setQueryResult(text);
-    } catch(e) {
-      setQueryResult("Error. Try again.");
-    }
+    } catch(e) { setQueryResult("Error. Try again."); }
     setQueryLoading(false);
   }
 
@@ -341,7 +307,7 @@ const KalshiTab = () => {
   );
 };
 
-// ---- MARKETS TAB (Polymarket) ----
+// ----- POLYMARKET TAB -----
 const MarketsTab = () => {
   const [markets, setMarkets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -396,7 +362,7 @@ const MarketsTab = () => {
   );
 };
 
-// ---- STOCKS TAB ----
+// ----- STOCKS TAB -----
 const StocksTab = () => {
   const [quotes, setQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -453,7 +419,7 @@ const StocksTab = () => {
   );
 };
 
-// ---- AI TAB (mock) ----
+// ----- AI TAB -----
 const AITab = ({calls}) => {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -509,7 +475,7 @@ const AITab = ({calls}) => {
   );
 };
 
-// ---- MAIN APP ----
+// ----- MAIN APP -----
 const INITIAL_CALLS = [
   {id:1001,title:"BTC > $70k by June 2025",category:"Crypto",myCall:"YES",confidence:82,notes:"ETF inflows + halving cycle",outcome:"pending",date:"Apr 12, 2025",source:""},
   {id:1002,title:"Fed cuts rates in Sept",category:"Politics",myCall:"YES",confidence:65,notes:"Inflation cooling",outcome:"pending",date:"Apr 10, 2025",source:""},
@@ -575,7 +541,8 @@ const PredictionHub = () => {
   );
 };
 
-ReactDOM.createRoot(document.getElementById("root")).render(<PredictionHub/>);
+// ---- RENDER (using legacy method for maximum compatibility) ----
+ReactDOM.render(<PredictionHub/>, document.getElementById("root"));
 </script>
 </body>
 </html>
