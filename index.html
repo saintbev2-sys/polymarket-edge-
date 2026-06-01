@@ -2,208 +2,168 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prediction Hub • Saint Bev</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#080808;color:#eef2ff;font-family:'Space Grotesk',sans-serif;line-height:1.4;padding:20px 16px 60px;min-height:100vh}
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-thumb{background:#2c2c2c;border-radius:10px}
-h1{font-size:2rem;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,#fff,#c6aaff);-webkit-background-clip:text;background-clip:text;color:transparent}
-button{font-family:inherit;cursor:pointer;transition:.2s}
-input,select,textarea{font-family:inherit;outline:none}
+body{background:#080808;color:#eef2ff;font-family:'Space Grotesk',sans-serif;padding:20px 16px 60px}
+h1{font-size:1.9rem;font-weight:800;background:linear-gradient(135deg,#fff,#c6aaff);-webkit-background-clip:text;background-clip:text;color:transparent}
+button,input,select,textarea{font-family:inherit}
+button{cursor:pointer;transition:.15s}
 .wrap{max-width:900px;margin:0 auto}
-/* HEADER */
-.header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;gap:12px}
-.subtitle{color:#9292aa;font-size:13px;margin-top:4px}
-.btn-new{background:#a78bfa;border:none;border-radius:60px;padding:10px 24px;font-weight:700;color:#000;font-size:14px}
-/* STAT GRID */
-.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
-.stat-card{background:#0c0c10;border-radius:20px;padding:14px 0;text-align:center;border:1px solid #1e1e24}
-.stat-val{font-size:26px;font-weight:800;letter-spacing:-0.5px}
-.stat-label{font-size:10px;color:#5a5a6e;margin-top:4px;letter-spacing:1px}
-/* TABS */
-.tabs{display:flex;gap:4px;background:#101014;border-radius:60px;padding:4px;margin-bottom:24px;border:1px solid #2a2a30;flex-wrap:wrap;width:fit-content}
-.tab{background:transparent;color:#ddd;border:none;border-radius:60px;padding:8px 16px;font-weight:500;font-size:13px;transition:.2s}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:12px}
+.btn-new{background:#a78bfa;border:none;border-radius:60px;padding:10px 22px;font-weight:700;color:#000;font-size:14px}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.stat-card{background:#0c0c10;border-radius:18px;padding:14px 0;text-align:center;border:1px solid #1e1e24}
+.stat-val{font-size:24px;font-weight:800}
+.stat-lbl{font-size:10px;color:#5a5a6e;margin-top:3px;letter-spacing:1px}
+.tabs{display:flex;gap:3px;background:#101014;border-radius:50px;padding:4px;margin-bottom:20px;border:1px solid #2a2a30;overflow-x:auto}
+.tab{background:transparent;color:#bbb;border:none;border-radius:50px;padding:8px 14px;font-weight:500;font-size:12px;white-space:nowrap}
 .tab.active{background:#a78bfa;color:#000}
-/* PANEL */
-.panel{background:#0a0a0e;border:1px solid rgba(255,255,255,.05);border-radius:32px;padding:24px 20px}
-.hidden{display:none}
-/* CALLS */
-.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-.filt-btn{background:#16161c;border:none;border-radius:40px;padding:6px 14px;color:#ccc;font-weight:500;font-size:12px;cursor:pointer}
-.filt-btn.active{color:#000}
-.call-card{background:#0e0e12;border-radius:20px;padding:16px;border:1px solid #26262c;margin-bottom:12px}
-.call-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap}
-.call-tag{border-radius:40px;padding:3px 10px;font-size:11px;font-weight:600}
-.call-title{font-size:16px;font-weight:700;margin-top:8px}
-.call-actions{display:flex;gap:6px;align-items:center}
-.call-actions select{background:#1d1d24;border:1px solid #2f2f3a;border-radius:40px;padding:5px 10px;color:white;font-size:11px}
-.btn-icon{background:#282832;border:none;border-radius:30px;padding:5px 10px;font-size:12px;color:#ccc}
-.btn-del{background:#2a1a1f;color:#ff8a8a}
-.conf-bar{height:6px;background:#1e1e24;border-radius:12px;overflow:hidden;margin-top:10px}
-.conf-fill{height:100%;background:linear-gradient(90deg,#a78bfa,#c084fc);border-radius:12px}
-.conf-label{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;color:#888}
-.call-notes{font-size:12px;color:#ababb5;margin-top:10px;border-left:2px solid #2c2c34;padding-left:10px}
-.call-date{font-size:10px;color:#5f5f73;margin-top:8px}
-.empty{text-align:center;color:#555;padding:48px;font-size:14px}
-/* KALSHI */
-.ai-box{background:#0c0c12;border:1px solid #1e1e2a;border-radius:20px;padding:16px;margin-bottom:20px}
-.ai-label{font-size:11px;color:#a78bfa;letter-spacing:2px;margin-bottom:10px}
-.ai-input-row{display:flex;gap:8px}
-.ai-input{flex:1;background:#16161e;border:1px solid #2a2a34;border-radius:14px;padding:10px 14px;color:white;font-size:13px}
-.btn-analyze{background:#a78bfa;border:none;border-radius:14px;padding:10px 16px;color:#000;font-weight:700;font-size:12px;white-space:nowrap}
-.btn-analyze:disabled{background:#1a1a24;color:#555}
-.ai-result{margin-top:12px;padding:14px;background:#080810;border:1px solid #2a2a3a;border-radius:14px;font-size:13px;color:#ccc;line-height:1.8;white-space:pre-wrap;animation:fadeIn .3s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.k-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.k-header h3{font-weight:600}
-.k-header a{color:#a78bfa;font-size:12px;text-decoration:none}
-.k-card{background:#0b0b0f;border-radius:20px;border:1px solid #1e1e26;overflow:hidden;margin-bottom:10px;transition:.2s}
-.k-card.selected{box-shadow:0 0 16px #00cc4433}
-.k-inner{padding:14px}
-.k-badges{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;align-items:center}
-.k-edge{font-size:10px;padding:2px 10px;border-radius:20px;font-weight:700;letter-spacing:1px}
-.k-cat{font-size:10px;color:#555;letter-spacing:1px}
-.k-vol{font-size:10px;background:#191920;padding:2px 8px;border-radius:20px;color:#888}
-.k-title{font-weight:600;font-size:14px;line-height:1.3}
-.k-right{text-align:right;flex-shrink:0}
-.k-pick{font-size:20px;font-weight:800}
-.k-odds{font-size:11px;color:#555}
-.k-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.k-btns{display:flex;gap:8px;margin-top:10px}
-.btn-dive{flex:1;padding:8px;background:#141418;border:1px solid #2a2a34;border-radius:12px;color:#888;font-size:11px;letter-spacing:1px;cursor:pointer;transition:.2s}
-.btn-kalshi{padding:8px 12px;background:#141418;border:1px solid #2a2a34;border-radius:12px;color:#a78bfa;font-size:11px;text-decoration:none;display:flex;align-items:center}
-.k-analysis{border-top:1px solid #1e1e26;padding:14px;background:#070710}
-.k-analysis-label{font-size:10px;letter-spacing:2px;margin-bottom:8px}
-.k-analysis-text{font-size:13px;color:#bbb;line-height:1.8;white-space:pre-wrap}
-/* POLYMARKET */
-.poly-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.btn-refresh{background:#1e1e26;border:none;border-radius:30px;padding:6px 14px;font-size:12px;color:#ccc;cursor:pointer}
-.poly-card{background:#0b0b0f;border-radius:20px;padding:14px 16px;border:1px solid #222;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;text-decoration:none}
-.poly-q{flex:2;font-weight:500;font-size:14px;color:#f0f0ff}
-.poly-odds{font-family:'DM Mono',monospace;font-weight:600;font-size:18px;color:#c084fc}
-.poly-vol{font-size:12px;background:#191920;padding:4px 10px;border-radius:40px;color:#aaa}
-.loading{text-align:center;padding:40px;color:#777;font-size:14px}
-.error-msg{text-align:center;padding:40px;color:#ff6b6b;font-size:13px;line-height:2}
-/* STOCKS */
-.stocks-header{display:flex;justify-content:space-between;margin-bottom:18px}
-.stocks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
-.stock-card{background:#0c0c10;border-radius:20px;padding:14px;border:1px solid #24242c}
-.stock-top{display:flex;justify-content:space-between;align-items:center}
-.stock-name{font-weight:700;font-size:14px}
-.stock-sym{font-size:10px;background:#19191f;padding:2px 8px;border-radius:20px;color:#666}
-.stock-price{font-size:20px;font-weight:600;margin-top:8px}
-.stock-change{font-size:13px;margin-top:4px}
-.stock-cat{font-size:10px;color:#6e6e86;margin-top:6px}
-/* AI TAB */
-.ai-hero{background:linear-gradient(135deg,#0b0b1a,#101018);border-radius:36px;padding:24px;border:1px solid #2a2a36;margin-bottom:20px}
-.ai-icon{font-size:40px;margin-bottom:10px}
-.ai-title{font-size:22px;font-weight:800;margin-bottom:4px}
-.ai-desc{color:#bcbce6;font-size:13px}
-.ai-snapshot{background:#00000055;border-radius:24px;margin-top:16px;padding:16px}
-.ai-snap-title{font-weight:600;margin-bottom:10px;font-size:14px}
-.ai-snap-stats{display:flex;gap:20px;flex-wrap:wrap}
-.ai-snap-stat span:first-child{font-size:12px;display:block;margin-bottom:2px}
-.ai-snap-stat span:last-child{font-size:26px;font-weight:800}
-/* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px}
-.modal-box{background:#101014;border:1px solid #2a2a2e;border-radius:32px;width:100%;max-width:500px;padding:24px;max-height:90vh;overflow-y:auto}
-.modal-title{font-size:22px;font-weight:700;margin-bottom:18px}
-.modal-field{background:#1a1a20;border:1px solid #2e2e36;border-radius:16px;padding:11px 14px;color:white;font-size:13px;width:100%;margin-bottom:12px}
-.modal-row{display:flex;gap:10px;margin-bottom:12px}
-.modal-row .modal-field{margin-bottom:0;flex:1}
-.modal-label{font-size:12px;color:#aaa;margin-bottom:6px;display:block}
-.range-wrap{margin-bottom:12px}
-input[type=range]{width:100%;accent-color:#a78bfa}
-textarea.modal-field{resize:vertical;min-height:60px}
-.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
-.btn-cancel{background:#1f1f26;border:none;border-radius:40px;padding:9px 16px;color:#bbb;cursor:pointer}
-.btn-save{background:#a78bfa;border:none;border-radius:40px;padding:9px 20px;color:#000;font-weight:600;cursor:pointer}
+.panel{background:#0a0a0e;border:1px solid #1a1a20;border-radius:28px;padding:20px 16px}
+.hidden{display:none!important}
+/* filter */
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.fbtn{background:#16161c;border:none;border-radius:40px;padding:5px 13px;color:#ccc;font-size:12px;cursor:pointer}
+.fbtn.on{color:#000}
+/* call card */
+.ccard{background:#0e0e12;border-radius:18px;padding:15px;border:1px solid #26262c;margin-bottom:10px}
+.ctop{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.ctag{border-radius:40px;padding:3px 10px;font-size:11px;font-weight:600;display:inline-block}
+.ctitle{font-size:15px;font-weight:700;margin-top:7px}
+.cacts{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.cacts select{background:#1d1d24;border:1px solid #2f2f3a;border-radius:30px;padding:5px 8px;color:white;font-size:11px}
+.ibtn{background:#282832;border:none;border-radius:20px;padding:5px 10px;font-size:12px;color:#ccc}
+.dbtn{background:#2a1a1f;color:#ff8a8a}
+.cbar{height:5px;background:#1e1e24;border-radius:10px;overflow:hidden;margin-top:10px}
+.cfill{height:100%;background:linear-gradient(90deg,#a78bfa,#c084fc);border-radius:10px}
+.clbl{display:flex;justify-content:space-between;font-size:11px;color:#777;margin-bottom:3px}
+.cnotes{font-size:12px;color:#ababb5;margin-top:9px;border-left:2px solid #2c2c34;padding-left:10px}
+.cdate{font-size:10px;color:#5f5f73;margin-top:7px}
+.empty{text-align:center;color:#444;padding:40px;font-size:14px}
+/* ai box */
+.aibox{background:#0c0c12;border:1px solid #1e1e2a;border-radius:18px;padding:14px;margin-bottom:18px}
+.ailbl{font-size:10px;color:#a78bfa;letter-spacing:2px;margin-bottom:8px}
+.airow{display:flex;gap:8px}
+.aiinput{flex:1;background:#16161e;border:1px solid #2a2a34;border-radius:12px;padding:9px 12px;color:white;font-size:13px;outline:none}
+.aibtn{background:#a78bfa;border:none;border-radius:12px;padding:9px 14px;color:#000;font-weight:700;font-size:12px}
+.aibtn:disabled{background:#1a1a24;color:#555}
+.aires{margin-top:10px;padding:12px;background:#08080f;border:1px solid #2a2a3a;border-radius:12px;font-size:13px;color:#ccc;line-height:1.8;white-space:pre-wrap}
+/* kalshi */
+.kcard{background:#0b0b0f;border-radius:18px;border:1px solid #1e1e26;margin-bottom:10px;overflow:hidden}
+.kinner{padding:14px}
+.kbadges{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;align-items:center}
+.kedge{font-size:10px;padding:2px 9px;border-radius:20px;font-weight:700;letter-spacing:1px}
+.kcat{font-size:10px;color:#555;letter-spacing:1px}
+.kvol{font-size:10px;background:#191920;padding:2px 8px;border-radius:20px;color:#888}
+.ktitle{font-weight:600;font-size:14px;line-height:1.3}
+.krow{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.kright{text-align:right;flex-shrink:0}
+.kpick{font-size:20px;font-weight:800}
+.kodds{font-size:11px;color:#555}
+.kbtns{display:flex;gap:8px;margin-top:10px}
+.kdive{flex:1;padding:8px;background:#141418;border:1px solid #2a2a34;border-radius:10px;color:#888;font-size:11px;cursor:pointer}
+.klink{padding:8px 12px;background:#141418;border:1px solid #2a2a34;border-radius:10px;color:#a78bfa;font-size:11px;text-decoration:none;display:flex;align-items:center}
+.kanalysis{border-top:1px solid #1e1e26;padding:14px;background:#070710}
+/* poly */
+.pcard{background:#0b0b0f;border-radius:18px;padding:13px 15px;border:1px solid #222;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;text-decoration:none}
+.pq{flex:2;font-weight:500;font-size:13px;color:#f0f0ff}
+.podds{font-family:'DM Mono',monospace;font-weight:600;font-size:17px;color:#c084fc}
+.pvol{font-size:11px;background:#191920;padding:3px 9px;border-radius:30px;color:#aaa}
+/* stocks */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.scard{background:#0c0c10;border-radius:18px;padding:13px;border:1px solid #24242c}
+.stop{display:flex;justify-content:space-between;align-items:center}
+.sname{font-weight:700;font-size:13px}
+.ssym{font-size:10px;background:#19191f;padding:2px 7px;border-radius:20px;color:#666}
+.sprice{font-size:19px;font-weight:600;margin-top:7px}
+.schange{font-size:12px;margin-top:3px}
+.scat{font-size:10px;color:#6e6e86;margin-top:5px}
+/* ai hero */
+.aihero{background:linear-gradient(135deg,#0b0b1a,#101018);border-radius:28px;padding:22px;border:1px solid #2a2a36;margin-bottom:18px}
+.aisnap{background:#00000055;border-radius:20px;margin-top:14px;padding:14px}
+.aisnapstats{display:flex;gap:18px;flex-wrap:wrap;margin-top:8px}
+/* modal */
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:999;padding:16px}
+.mbox{background:#111116;border:1px solid #2a2a2e;border-radius:28px;width:100%;max-width:480px;padding:22px;max-height:88vh;overflow-y:auto}
+.mhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.mtitle{font-size:20px;font-weight:700}
+.mclose{background:#2a2a32;border:none;border-radius:50%;width:34px;height:34px;font-size:16px;color:#ccc;cursor:pointer;flex-shrink:0}
+.mfield{background:#1a1a20;border:1px solid #2e2e36;border-radius:14px;padding:10px 13px;color:white;font-size:13px;width:100%;display:block;margin-bottom:10px;outline:none}
+.mrow{display:flex;gap:8px;margin-bottom:10px}
+.mrow .mfield{margin-bottom:0}
+.mlbl{font-size:12px;color:#888;margin-bottom:5px;display:block}
+textarea.mfield{resize:vertical;min-height:58px}
+.mfoot{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+.mcancel{background:#1f1f26;border:none;border-radius:30px;padding:9px 16px;color:#bbb;cursor:pointer}
+.msave{background:#a78bfa;border:none;border-radius:30px;padding:9px 20px;color:#000;font-weight:700;cursor:pointer}
+.rowbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.rowbar h3{font-weight:600;font-size:15px}
+.rbtn{background:#1e1e26;border:none;border-radius:20px;padding:5px 12px;font-size:12px;color:#ccc;cursor:pointer}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <!-- HEADER -->
   <div class="header">
     <div>
       <h1>PREDICTION HUB</h1>
-      <p class="subtitle">SAINT BEV · track your market edge</p>
+      <div style="color:#9292aa;font-size:12px;margin-top:3px">SAINT BEV · track your edge</div>
     </div>
-    <button class="btn-new" onclick="openModal()">+ New call</button>
+    <button class="btn-new" id="btnNew">+ New call</button>
   </div>
-
-  <!-- STATS -->
-  <div class="stat-grid" id="statGrid"></div>
-
-  <!-- TABS -->
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('mycalls',this)">📋 My Calls</button>
-    <button class="tab" onclick="switchTab('kalshi',this)">🎯 Kalshi</button>
-    <button class="tab" onclick="switchTab('markets',this)">🎲 Polymarket</button>
-    <button class="tab" onclick="switchTab('stocks',this)">📈 Stocks</button>
-    <button class="tab" onclick="switchTab('ai',this)">🤖 BEV·AI</button>
+  <div class="stat-grid" id="stats"></div>
+  <div class="tabs" id="tabBar">
+    <button class="tab active" data-tab="mycalls">📋 My Calls</button>
+    <button class="tab" data-tab="kalshi">🎯 Kalshi</button>
+    <button class="tab" data-tab="markets">🎲 Polymarket</button>
+    <button class="tab" data-tab="stocks">📈 Stocks</button>
+    <button class="tab" data-tab="ai">🤖 BEV·AI</button>
   </div>
-
-  <!-- PANELS -->
   <div class="panel">
-    <div id="panel-mycalls"></div>
-    <div id="panel-kalshi" class="hidden"></div>
-    <div id="panel-markets" class="hidden"></div>
-    <div id="panel-stocks" class="hidden"></div>
-    <div id="panel-ai" class="hidden"></div>
+    <div id="mycalls"></div>
+    <div id="kalshi" class="hidden"></div>
+    <div id="markets" class="hidden"></div>
+    <div id="stocks" class="hidden"></div>
+    <div id="ai" class="hidden"></div>
   </div>
 </div>
 
-<!-- MODAL -->
-<div class="modal-overlay hidden" id="modal" onclick="closeModalOutside(event)">
-  <div class="modal-box">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-      <div class="modal-title" id="modalTitle" style="margin-bottom:0">➕ New prediction</div>
-      <button onclick="closeModal()" style="background:#2a2a32;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;color:#ccc;display:flex;align-items:center;justify-content:center;flex-shrink:0">✕</button>
+<!-- MODAL — starts hidden -->
+<div id="modal" class="hidden">
+  <div class="mbox">
+    <div class="mhead">
+      <div class="mtitle" id="mtitle">➕ New prediction</div>
+      <button class="mclose" id="btnClose">✕</button>
     </div>
-    <input class="modal-field" id="mTitle" placeholder="Prediction title *">
-    <div class="modal-row">
-      <select class="modal-field" id="mCategory">
+    <input class="mfield" id="mTitle" placeholder="Prediction title *">
+    <div class="mrow">
+      <select class="mfield" id="mCat">
         <option>Crypto</option><option>Politics</option><option>Energy/Gas</option>
         <option>Geopolitics</option><option>Stocks</option><option>Other</option><option>Sports</option>
       </select>
-      <select class="modal-field" id="mCall">
-        <option>YES</option><option>NO</option>
-      </select>
+      <select class="mfield" id="mCall"><option>YES</option><option>NO</option></select>
     </div>
-    <div class="range-wrap">
-      <label class="modal-label" id="confLabel">Confidence: 70%</label>
-      <input type="range" min="0" max="100" value="70" id="mConf" oninput="document.getElementById('confLabel').textContent='Confidence: '+this.value+'%'">
-    </div>
-    <select class="modal-field" id="mOutcome">
+    <label class="mlbl" id="confLbl">Confidence: 70%</label>
+    <input type="range" min="0" max="100" value="70" id="mConf" style="width:100%;accent-color:#a78bfa;margin-bottom:10px">
+    <select class="mfield" id="mOut">
       <option value="pending">⏳ Pending</option>
       <option value="correct">✅ Correct</option>
       <option value="incorrect">❌ Incorrect</option>
     </select>
-    <input class="modal-field" id="mSource" placeholder="Source URL (optional)">
-    <textarea class="modal-field" id="mNotes" placeholder="Notes / thesis ..."></textarea>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" onclick="saveCall()">Save →</button>
+    <input class="mfield" id="mSrc" placeholder="Source URL (optional)">
+    <textarea class="mfield" id="mNotes" placeholder="Notes / thesis ..."></textarea>
+    <div class="mfoot">
+      <button class="mcancel" id="btnCancel">Cancel</button>
+      <button class="msave" id="btnSave">Save →</button>
     </div>
   </div>
 </div>
 
 <script>
-// ---- DATA ----
-const CAT_COLOR = {
-  Crypto:"#f7931a",Politics:"#a78bfa","Energy/Gas":"#fb923c",
-  Geopolitics:"#f43f5e",Stocks:"#34d399",Other:"#94a3b8",Sports:"#ff8c42"
-};
-const EDGE_STYLE = {
-  "+EV":{bg:"#0a2a0a",border:"#00cc44",text:"#00ff55"},
-  "FAIR":{bg:"#1a1a00",border:"#ccaa00",text:"#ffcc00"},
-  "AVOID":{bg:"#2a0a0a",border:"#cc2200",text:"#ff4422"},
-  "MONITOR":{bg:"#0a1a2a",border:"#0088cc",text:"#00aaff"}
-};
-const KALSHI_MARKETS = [
+const CAT_COLOR={Crypto:"#f7931a",Politics:"#a78bfa","Energy/Gas":"#fb923c",Geopolitics:"#f43f5e",Stocks:"#34d399",Other:"#94a3b8",Sports:"#ff8c42"};
+const EDGE={"+EV":{bg:"#0a2a0a",br:"#00cc44",tx:"#00ff55"},"FAIR":{bg:"#1a1a00",br:"#ccaa00",tx:"#ffcc00"},"AVOID":{bg:"#2a0a0a",br:"#cc2200",tx:"#ff4422"},"MONITOR":{bg:"#0a1a2a",br:"#0088cc",tx:"#00aaff"}};
+const KM=[
   {id:"k1",title:"Strait of Hormuz traffic normal before Sep 1, 2026",odds:46,vol:"$15.9M",cat:"Geopolitics",pick:"NO",edge:"+EV"},
   {id:"k2",title:"WTI Oil above $90 before Aug 1, 2026",odds:41,vol:"$4.2M",cat:"Energy/Gas",pick:"YES",edge:"+EV"},
   {id:"k3",title:"Spurs win 2026 NBA Championship",odds:62,vol:"$8.1M",cat:"Sports",pick:"NO",edge:"FAIR"},
@@ -213,359 +173,251 @@ const KALSHI_MARKETS = [
   {id:"k7",title:"Bitcoin above $100k before Aug 2026",odds:44,vol:"$9.5M",cat:"Crypto",pick:"YES",edge:"+EV"},
   {id:"k8",title:"US recession declared in 2026",odds:28,vol:"$5.1M",cat:"Stocks",pick:"NO",edge:"FAIR"},
 ];
-const WATCH_TICKERS = [
-  {sym:"SPY",label:"S&P 500",cat:"Index"},
-  {sym:"QQQ",label:"Nasdaq 100",cat:"Index"},
-  {sym:"BTC-USD",label:"Bitcoin",cat:"Crypto"},
-  {sym:"ETH-USD",label:"Ethereum",cat:"Crypto"},
-  {sym:"NVDA",label:"NVIDIA",cat:"Stocks"},
-  {sym:"TSLA",label:"Tesla",cat:"Stocks"},
-  {sym:"USO",label:"Oil Fund",cat:"Energy"},
-  {sym:"XOM",label:"Exxon",cat:"Energy"},
-  {sym:"GLD",label:"Gold",cat:"Commodity"},
-];
+const TICKERS=[{sym:"SPY",label:"S&P 500",cat:"Index"},{sym:"QQQ",label:"Nasdaq 100",cat:"Index"},{sym:"BTC-USD",label:"Bitcoin",cat:"Crypto"},{sym:"ETH-USD",label:"Ethereum",cat:"Crypto"},{sym:"NVDA",label:"NVIDIA",cat:"Stocks"},{sym:"TSLA",label:"Tesla",cat:"Stocks"},{sym:"USO",label:"Oil Fund",cat:"Energy"},{sym:"XOM",label:"Exxon",cat:"Energy"},{sym:"GLD",label:"Gold",cat:"Commodity"}];
 
-let calls = [
+let calls=[
   {id:1001,title:"BTC > $70k by June 2025",category:"Crypto",myCall:"YES",confidence:82,notes:"ETF inflows + halving cycle",outcome:"pending",date:"Apr 12, 2025",source:""},
   {id:1002,title:"Fed cuts rates in Sept",category:"Politics",myCall:"YES",confidence:65,notes:"Inflation cooling",outcome:"pending",date:"Apr 10, 2025",source:""},
   {id:1003,title:"Oil stays above $80",category:"Energy/Gas",myCall:"YES",confidence:73,notes:"OPEC cuts",outcome:"correct",date:"Mar 28, 2025",source:""},
 ];
-let editId = null;
-let activeFilter = "All";
-let selectedKalshi = null;
-let kalshiAnalyses = {};
+let editId=null, activeFilter="All", activeTab="mycalls", kalshiCache={};
 
-// ---- AI MOCK ----
-function aiAnalyze(msg) {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      const m = msg.toLowerCase();
-      if(m.includes("hormuz")||m.includes("strait")) resolve("🔍 VERDICT: NO (Hormuz normal by Sep 1)\nCONFIDENCE: 72%\nREASONING: Iran wants to avoid full closure. Tanker traffic is 85% of normal. Diplomatic backchannels active.\nRISK: Sudden escalation after Israeli strike.\nBET SIZE: Medium ($5-20) – play the NO at 46¢.");
-      else if(m.includes("oil")||m.includes("wti")) resolve("VERDICT: YES (Oil above $90 before Aug 1)\nCONFIDENCE: 68%\nREASONING: OPEC+ cuts, summer driving season, geopolitical premium. Saudi needs $90+ for budget.\nRISK: Demand destruction if recession hits.\nBET SIZE: Small ($1-5) – Yes at 41¢ offers +EV.");
-      else if(m.includes("bitcoin")||m.includes("btc")) resolve("VERDICT: YES (BTC > $100k before Aug 2026)\nCONFIDENCE: 58%\nREASONING: Halving effects lag, institutional flows (ETF), and rate cuts expected mid-2026.\nRISK: Regulatory crackdown or macro crash.\nBET SIZE: Small – odds at 44¢ are fair, wait for a dip to 38¢.");
-      else if(m.includes("nba")||m.includes("spurs")||m.includes("knicks")) resolve("VERDICT: NO (Spurs won't win 2026 title)\nCONFIDENCE: 82%\nREASONING: Too young, West is stacked. Odds at 62¢ are overvalued.\nRISK: Wemby becomes unstoppable.\nBET SIZE: Medium – sell the hype, play NO at 38¢.");
-      else if(m.includes("fed")||m.includes("rate")) resolve("VERDICT: YES (Fed cuts before Sep 2026)\nCONFIDENCE: 74%\nREASONING: Inflation trending down to 2.4%, unemployment up to 4.1%. Powell signals cuts.\nRISK: Services inflation sticky.\nBET SIZE: Medium – Yes at 48¢ is good value.");
-      else resolve("🔍 ANALYSIS\nVERDICT: Lean YES based on current data.\nCONFIDENCE: 65%\nREASONING: Market sentiment and fundamentals align. Volume confirms interest.\nRISK: Unexpected headline risk.\nBET SIZE: Small to Medium. Monitor for entry.");
-    }, 700 + Math.random()*300);
-  });
+function fmtV(v){if(!v)return"—";if(v>=1e6)return"$"+(v/1e6).toFixed(1)+"M";if(v>=1e3)return"$"+(v/1e3).toFixed(0)+"K";return"$"+v;}
+
+async function aiQ(msg){
+  await new Promise(r=>setTimeout(r,700+Math.random()*300));
+  const m=msg.toLowerCase();
+  if(m.includes("hormuz")||m.includes("strait"))return"VERDICT: NO (Hormuz normal by Sep 1)\nCONFIDENCE: 72%\nREASONING: Iran avoids full closure. Tanker traffic 85% normal. Backchannels active.\nRISK: Escalation after Israeli strike.\nBET SIZE: Medium – play NO at 46¢.";
+  if(m.includes("oil")||m.includes("wti"))return"VERDICT: YES (Oil above $90)\nCONFIDENCE: 68%\nREASONING: OPEC+ cuts, summer demand, geopolitical premium.\nRISK: Recession demand hit.\nBET SIZE: Small – Yes at 41¢ is +EV.";
+  if(m.includes("bitcoin")||m.includes("btc"))return"VERDICT: YES (BTC > $100k)\nCONFIDENCE: 58%\nREASONING: Halving lag, ETF inflows, rate cuts mid-2026.\nRISK: Regulatory crackdown.\nBET SIZE: Small – wait for dip to 38¢.";
+  if(m.includes("nba")||m.includes("spurs")||m.includes("knicks"))return"VERDICT: NO (Spurs won't win)\nCONFIDENCE: 82%\nREASONING: Too young, West stacked. 62¢ overvalued.\nRISK: Wemby unstoppable.\nBET SIZE: Medium – play NO at 38¢.";
+  if(m.includes("fed")||m.includes("rate"))return"VERDICT: YES (Fed cuts by Sep)\nCONFIDENCE: 74%\nREASONING: Inflation at 2.4%, unemployment 4.1%, Powell signals cuts.\nRISK: Sticky services inflation.\nBET SIZE: Medium – Yes at 48¢ good value.";
+  return"VERDICT: Lean YES\nCONFIDENCE: 65%\nREASONING: Sentiment and fundamentals align. Volume confirms.\nRISK: Headline risk.\nBET SIZE: Small to Medium.";
 }
 
-function fmtVol(v) {
-  if(!v) return "—";
-  if(v>=1e6) return "$"+(v/1e6).toFixed(1)+"M";
-  if(v>=1e3) return "$"+(v/1e3).toFixed(0)+"K";
-  return "$"+v;
+// STATS
+function renderStats(){
+  const tot=calls.length,cor=calls.filter(c=>c.outcome==="correct").length,pen=calls.filter(c=>c.outcome==="pending").length;
+  const gr=calls.filter(c=>c.outcome==="correct"||c.outcome==="incorrect").length;
+  const win=gr?Math.round(cor/gr*100):null;
+  const wc=win===null?"#ffd166":win>=60?"#00ff9d":win<40?"#ff4d6d":"#ffd166";
+  document.getElementById("stats").innerHTML=[
+    {l:"TOTAL",v:tot,c:"#fff"},{l:"WIN %",v:win!==null?win+"%":"—",c:wc},
+    {l:"✅ CORRECT",v:cor,c:"#00ff9d"},{l:"⏳ PENDING",v:pen,c:"#ffd166"},
+  ].map(s=>`<div class="stat-card"><div class="stat-val" style="color:${s.c}">${s.v}</div><div class="stat-lbl">${s.l}</div></div>`).join("");
 }
 
-// ---- STATS ----
-function renderStats() {
-  const total = calls.length;
-  const correct = calls.filter(c=>c.outcome==="correct").length;
-  const pending = calls.filter(c=>c.outcome==="pending").length;
-  const graded = calls.filter(c=>c.outcome==="correct"||c.outcome==="incorrect").length;
-  const win = graded ? Math.round(correct/graded*100) : null;
-  const winColor = win===null?"#ffd166":win>=60?"#00ff9d":win<40?"#ff4d6d":"#ffd166";
-  document.getElementById("statGrid").innerHTML = [
-    {l:"TOTAL",v:total,c:"#fff"},
-    {l:"WIN %",v:win!==null?win+"%":"—",c:winColor},
-    {l:"✅ CORRECT",v:correct,c:"#00ff9d"},
-    {l:"⏳ PENDING",v:pending,c:"#ffd166"},
-  ].map(s=>`<div class="stat-card"><div class="stat-val" style="color:${s.c}">${s.v}</div><div class="stat-label">${s.l}</div></div>`).join("");
-}
-
-// ---- TABS ----
-function switchTab(name, btn) {
+// TABS
+document.getElementById("tabBar").addEventListener("click",e=>{
+  const btn=e.target.closest(".tab"); if(!btn)return;
   document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
   btn.classList.add("active");
-  ["mycalls","kalshi","markets","stocks","ai"].forEach(p=>{
-    const el = document.getElementById("panel-"+p);
-    if(el) el.classList.toggle("hidden", p!==name);
-  });
-  if(name==="kalshi") renderKalshi();
-  if(name==="markets") renderMarkets();
-  if(name==="stocks") renderStocks();
-  if(name==="ai") renderAI();
-}
+  const tab=btn.dataset.tab; activeTab=tab;
+  ["mycalls","kalshi","markets","stocks","ai"].forEach(p=>document.getElementById(p).classList.toggle("hidden",p!==tab));
+  if(tab==="kalshi")renderKalshi();
+  if(tab==="markets")renderMarkets();
+  if(tab==="stocks")renderStocks();
+  if(tab==="ai")renderAI();
+});
 
-// ---- MY CALLS ----
-function renderCalls() {
-  const filtered = activeFilter==="All" ? calls : calls.filter(c=>c.category===activeFilter);
-  const cats = ["All","Crypto","Politics","Energy/Gas","Geopolitics","Stocks","Other","Sports"];
-  let html = `<div class="filter-bar">`;
-  cats.forEach(cat => {
-    const color = cat==="All" ? "#a78bfa" : (CAT_COLOR[cat]||"#aaa");
-    const isActive = activeFilter===cat;
-    html += `<button class="filt-btn${isActive?" active":""}" style="${isActive?"background:"+color+";color:#000":""}" onclick="setFilter('${cat}')">${cat}</button>`;
-  });
-  html += `</div>`;
-  if(!filtered.length) { html += `<div class="empty">✨ No predictions yet — add your first call</div>`; }
-  filtered.forEach(call => {
-    const color = CAT_COLOR[call.category]||"#aaa";
-    html += `<div class="call-card">
-      <div class="call-top">
-        <div>
-          <span class="call-tag" style="background:${color}20;color:${color}">${call.category}</span>
-          <div class="call-title">${call.title} <span style="font-size:13px;color:#b9b9e6">• ${call.myCall}</span></div>
-        </div>
-        <div class="call-actions">
-          <select onchange="updateOutcome(${call.id},this.value)">
-            <option value="pending"${call.outcome==="pending"?" selected":""}>⏳ Pending</option>
-            <option value="correct"${call.outcome==="correct"?" selected":""}>✅ Correct</option>
-            <option value="incorrect"${call.outcome==="incorrect"?" selected":""}>❌ Incorrect</option>
+// MY CALLS
+function renderCalls(){
+  const cats=["All","Crypto","Politics","Energy/Gas","Geopolitics","Stocks","Other","Sports"];
+  const filtered=activeFilter==="All"?calls:calls.filter(c=>c.category===activeFilter);
+  let h=`<div class="filter-bar">`+cats.map(cat=>{
+    const col=CAT_COLOR[cat]||"#a78bfa",on=activeFilter===cat;
+    return`<button class="fbtn${on?" on":""}" style="${on?"background:"+col+";color:#000":""}" onclick="setF('${cat}')">${cat}</button>`;
+  }).join("")+`</div>`;
+  if(!filtered.length){h+=`<div class="empty">No predictions yet — tap + New call</div>`;}
+  filtered.forEach(c=>{
+    const col=CAT_COLOR[c.category]||"#aaa";
+    h+=`<div class="ccard">
+      <div class="ctop">
+        <div><span class="ctag" style="background:${col}22;color:${col}">${c.category}</span>
+        <div class="ctitle">${c.title} <span style="font-size:12px;color:#b9b9e6">• ${c.myCall}</span></div></div>
+        <div class="cacts">
+          <select onchange="updOut(${c.id},this.value)">
+            <option value="pending"${c.outcome==="pending"?" selected":""}>⏳ Pending</option>
+            <option value="correct"${c.outcome==="correct"?" selected":""}>✅ Correct</option>
+            <option value="incorrect"${c.outcome==="incorrect"?" selected":""}>❌ Incorrect</option>
           </select>
-          <button class="btn-icon" onclick="openEditModal(${call.id})">✏️</button>
-          <button class="btn-icon btn-del" onclick="deleteCall(${call.id})">🗑️</button>
+          <button class="ibtn" onclick="openEdit(${c.id})">✏️</button>
+          <button class="ibtn dbtn" onclick="delCall(${c.id})">🗑️</button>
         </div>
       </div>
-      <div class="conf-label"><span>Confidence</span><span>${call.confidence}%</span></div>
-      <div class="conf-bar"><div class="conf-fill" style="width:${call.confidence}%"></div></div>
-      ${call.notes?`<div class="call-notes">${call.notes}</div>`:""}
-      ${call.source?`<div style="margin-top:8px;font-size:11px"><a href="${call.source}" target="_blank" style="color:#a78bfa;text-decoration:none">🔗 source</a></div>`:""}
-      <div class="call-date">📅 ${call.date}</div>
+      <div class="clbl"><span>Confidence</span><span>${c.confidence}%</span></div>
+      <div class="cbar"><div class="cfill" style="width:${c.confidence}%"></div></div>
+      ${c.notes?`<div class="cnotes">${c.notes}</div>`:""}
+      <div class="cdate">📅 ${c.date}</div>
     </div>`;
   });
-  document.getElementById("panel-mycalls").innerHTML = html;
+  document.getElementById("mycalls").innerHTML=h;
 }
-function setFilter(cat) { activeFilter=cat; renderCalls(); }
-function updateOutcome(id, val) {
-  calls = calls.map(c=>c.id===id?{...c,outcome:val}:c);
-  renderStats(); renderCalls();
-}
-function deleteCall(id) {
-  if(!confirm("Delete this prediction?")) return;
-  calls = calls.filter(c=>c.id!==id);
-  renderStats(); renderCalls();
-}
+function setF(cat){activeFilter=cat;renderCalls();}
+function updOut(id,val){calls=calls.map(c=>c.id===id?{...c,outcome:val}:c);renderStats();renderCalls();}
+function delCall(id){if(confirm("Delete?")){calls=calls.filter(c=>c.id!==id);renderStats();renderCalls();}}
 
-// ---- MODAL ----
-function openModal() {
-  editId = null;
-  document.getElementById("modalTitle").textContent = "➕ New prediction";
-  document.getElementById("mTitle").value = "";
-  document.getElementById("mCategory").value = "Crypto";
-  document.getElementById("mCall").value = "YES";
-  document.getElementById("mConf").value = 70;
-  document.getElementById("confLabel").textContent = "Confidence: 70%";
-  document.getElementById("mOutcome").value = "pending";
-  document.getElementById("mSource").value = "";
-  document.getElementById("mNotes").value = "";
+// MODAL
+function openModal(){
+  editId=null;
+  document.getElementById("mtitle").textContent="➕ New prediction";
+  document.getElementById("mTitle").value="";
+  document.getElementById("mCat").value="Crypto";
+  document.getElementById("mCall").value="YES";
+  document.getElementById("mConf").value=70;
+  document.getElementById("confLbl").textContent="Confidence: 70%";
+  document.getElementById("mOut").value="pending";
+  document.getElementById("mSrc").value="";
+  document.getElementById("mNotes").value="";
   document.getElementById("modal").classList.remove("hidden");
 }
-function openEditModal(id) {
-  const c = calls.find(x=>x.id===id); if(!c) return;
-  editId = id;
-  document.getElementById("modalTitle").textContent = "✏️ Edit prediction";
-  document.getElementById("mTitle").value = c.title;
-  document.getElementById("mCategory").value = c.category;
-  document.getElementById("mCall").value = c.myCall;
-  document.getElementById("mConf").value = c.confidence;
-  document.getElementById("confLabel").textContent = "Confidence: "+c.confidence+"%";
-  document.getElementById("mOutcome").value = c.outcome;
-  document.getElementById("mSource").value = c.source||"";
-  document.getElementById("mNotes").value = c.notes||"";
+function openEdit(id){
+  const c=calls.find(x=>x.id===id);if(!c)return;
+  editId=id;
+  document.getElementById("mtitle").textContent="✏️ Edit prediction";
+  document.getElementById("mTitle").value=c.title;
+  document.getElementById("mCat").value=c.category;
+  document.getElementById("mCall").value=c.myCall;
+  document.getElementById("mConf").value=c.confidence;
+  document.getElementById("confLbl").textContent="Confidence: "+c.confidence+"%";
+  document.getElementById("mOut").value=c.outcome;
+  document.getElementById("mSrc").value=c.source||"";
+  document.getElementById("mNotes").value=c.notes||"";
   document.getElementById("modal").classList.remove("hidden");
 }
-function closeModal() { document.getElementById("modal").classList.add("hidden"); }
-function closeModalOutside(e) { if(e.target===document.getElementById("modal")) closeModal(); }
-function saveCall() {
-  const title = document.getElementById("mTitle").value.trim();
-  if(!title) { alert("Add a title"); return; }
-  const data = {
-    title, category:document.getElementById("mCategory").value,
-    myCall:document.getElementById("mCall").value,
-    confidence:parseInt(document.getElementById("mConf").value),
-    outcome:document.getElementById("mOutcome").value,
-    source:document.getElementById("mSource").value.trim(),
-    notes:document.getElementById("mNotes").value.trim(),
-    date:new Date().toLocaleDateString()
-  };
-  if(editId) {
-    calls = calls.map(c=>c.id===editId?{...c,...data}:c);
-  } else {
-    calls.unshift({id:Date.now(),...data});
-  }
-  closeModal(); renderStats(); renderCalls();
-}
+function closeModal(){document.getElementById("modal").classList.add("hidden");}
 
-// ---- KALSHI ----
-function renderKalshi() {
-  let html = `<div class="ai-box">
-    <div class="ai-label">ASK KALSHI AI</div>
-    <div class="ai-input-row">
-      <input class="ai-input" id="kQuery" placeholder="Hormuz? NBA Finals? Oil above $85?" onkeydown="if(event.key==='Enter')askKalshi()">
-      <button class="btn-analyze" id="kBtn" onclick="askKalshi()">ANALYZE →</button>
-    </div>
-    <div id="kResult"></div>
-  </div>
-  <div class="k-header"><h3>🎯 Kalshi Markets</h3><a href="https://kalshi.com" target="_blank">Open Kalshi →</a></div>`;
-  KALSHI_MARKETS.forEach(m => {
-    const ec = EDGE_STYLE[m.edge]||EDGE_STYLE["FAIR"];
-    const isSel = selectedKalshi===m.id;
-    const pickColor = m.pick==="YES"?"#00ff9d":"#ff4d6d";
-    html += `<div class="k-card${isSel?" selected":""}" id="kcard-${m.id}" style="${isSel?"border-color:"+ec.border:""}">
-      <div class="k-inner">
-        <div class="k-row">
-          <div style="flex:1">
-            <div class="k-badges">
-              <span class="k-edge" style="background:${ec.bg};border:1px solid ${ec.border};color:${ec.text}">${m.edge}</span>
-              <span class="k-cat">${m.cat.toUpperCase()}</span>
-              <span class="k-vol">${m.vol}</span>
-            </div>
-            <div class="k-title">${m.title}</div>
-          </div>
-          <div class="k-right">
-            <div class="k-pick" style="color:${pickColor}">${m.pick}</div>
-            <div class="k-odds">${m.odds}¢ YES</div>
-          </div>
-        </div>
-        <div class="k-btns">
-          <button class="btn-dive" id="dive-${m.id}" style="${isSel?"background:"+ec.bg+";border-color:"+ec.border+";color:"+ec.text:""}" onclick="deepDive('${m.id}')">→ AI DEEP DIVE</button>
-          <a class="btn-kalshi" href="https://kalshi.com" target="_blank">KALSHI ↗</a>
-        </div>
-      </div>
-      <div id="analysis-${m.id}" style="display:none" class="k-analysis">
-        <div class="k-analysis-label" style="color:${ec.text}">◆ AI DEEP DIVE</div>
-        <div class="k-analysis-text"></div>
-      </div>
-    </div>`;
+document.getElementById("btnNew").addEventListener("click",openModal);
+document.getElementById("btnClose").addEventListener("click",closeModal);
+document.getElementById("btnCancel").addEventListener("click",closeModal);
+document.getElementById("mConf").addEventListener("input",function(){document.getElementById("confLbl").textContent="Confidence: "+this.value+"%";});
+document.getElementById("modal").addEventListener("click",function(e){if(e.target===this)closeModal();});
+document.getElementById("btnSave").addEventListener("click",function(){
+  const title=document.getElementById("mTitle").value.trim();
+  if(!title){alert("Add a title");return;}
+  const d={title,category:document.getElementById("mCat").value,myCall:document.getElementById("mCall").value,
+    confidence:parseInt(document.getElementById("mConf").value),outcome:document.getElementById("mOut").value,
+    source:document.getElementById("mSrc").value.trim(),notes:document.getElementById("mNotes").value.trim(),
+    date:new Date().toLocaleDateString()};
+  if(editId){calls=calls.map(c=>c.id===editId?{...c,...d}:c);}
+  else{calls.unshift({id:Date.now(),...d});}
+  closeModal();renderStats();renderCalls();
+});
+
+// KALSHI
+function renderKalshi(){
+  let h=`<div class="aibox"><div class="ailbl">ASK KALSHI AI</div>
+    <div class="airow"><input class="aiinput" id="kq" placeholder="Hormuz? NBA? Oil above $85?">
+    <button class="aibtn" id="kbtn" onclick="askK()">ANALYZE →</button></div>
+    <div id="kr"></div></div>
+    <div class="rowbar"><h3>🎯 Kalshi Markets</h3><a href="https://kalshi.com" target="_blank" style="color:#a78bfa;font-size:12px;text-decoration:none">Open Kalshi →</a></div>`;
+  KM.forEach(m=>{
+    const e=EDGE[m.edge]||EDGE["FAIR"],pc=m.pick==="YES"?"#00ff9d":"#ff4d6d";
+    h+=`<div class="kcard" id="kc-${m.id}"><div class="kinner">
+      <div class="krow"><div style="flex:1">
+        <div class="kbadges"><span class="kedge" style="background:${e.bg};border:1px solid ${e.br};color:${e.tx}">${m.edge}</span>
+        <span class="kcat">${m.cat.toUpperCase()}</span><span class="kvol">${m.vol}</span></div>
+        <div class="ktitle">${m.title}</div>
+      </div><div class="kright"><div class="kpick" style="color:${pc}">${m.pick}</div><div class="kodds">${m.odds}¢ YES</div></div></div>
+      <div class="kbtns"><button class="kdive" id="kd-${m.id}" onclick="deepDive('${m.id}')">→ AI DEEP DIVE</button>
+      <a class="klink" href="https://kalshi.com" target="_blank">KALSHI ↗</a></div>
+    </div><div id="ka-${m.id}" class="kanalysis hidden"></div></div>`;
   });
-  document.getElementById("panel-kalshi").innerHTML = html;
-  // restore cached analyses
-  KALSHI_MARKETS.forEach(m => {
-    if(kalshiAnalyses[m.id]) {
-      const el = document.getElementById("analysis-"+m.id);
-      if(el) { el.querySelector(".k-analysis-text").textContent = kalshiAnalyses[m.id]; el.style.display="block"; }
-    }
-  });
+  document.getElementById("kalshi").innerHTML=h;
+  document.getElementById("kq").addEventListener("keydown",e=>{if(e.key==="Enter")askK();});
+  KM.forEach(m=>{if(kalshiCache[m.id]){const el=document.getElementById("ka-"+m.id);if(el){el.innerHTML=kaHTML(m.id,kalshiCache[m.id]);el.classList.remove("hidden");}}});
 }
-async function askKalshi() {
-  const q = document.getElementById("kQuery").value.trim();
-  if(!q) return;
-  const btn = document.getElementById("kBtn");
-  btn.disabled=true; btn.textContent="...";
-  const res = document.getElementById("kResult");
-  res.innerHTML="";
-  const text = await aiAnalyze(q);
-  res.innerHTML = `<div class="ai-result"><div class="ai-label">AI ANALYSIS</div>${text}</div>`;
-  btn.disabled=false; btn.textContent="ANALYZE →";
+function kaHTML(id,text){const e=EDGE[KM.find(m=>m.id===id)?.edge]||EDGE["FAIR"];return`<div style="font-size:10px;color:${e.tx};letter-spacing:2px;margin-bottom:8px">◆ AI DEEP DIVE</div><div style="font-size:13px;color:#bbb;line-height:1.8;white-space:pre-wrap">${text}</div>`;}
+async function askK(){
+  const q=document.getElementById("kq").value.trim();if(!q)return;
+  const btn=document.getElementById("kbtn");btn.disabled=true;btn.textContent="...";
+  const text=await aiQ(q);
+  document.getElementById("kr").innerHTML=`<div class="aires"><div class="ailbl">AI ANALYSIS</div>${text}</div>`;
+  btn.disabled=false;btn.textContent="ANALYZE →";
 }
-async function deepDive(id) {
-  const m = KALSHI_MARKETS.find(x=>x.id===id); if(!m) return;
-  selectedKalshi = id;
-  const btn = document.getElementById("dive-"+id);
-  const ec = EDGE_STYLE[m.edge]||EDGE_STYLE["FAIR"];
-  if(btn) { btn.textContent="⟳ SEARCHING..."; btn.style.background=ec.bg; btn.style.borderColor=ec.border; btn.style.color=ec.text; }
-  const card = document.getElementById("kcard-"+id);
-  if(card) { card.classList.add("selected"); card.style.borderColor=ec.border; card.style.boxShadow="0 0 16px "+ec.border+"33"; }
-  const text = await aiAnalyze("Market: "+m.title+" Odds: "+m.odds+"¢ Category: "+m.cat);
-  kalshiAnalyses[id] = text;
-  const analysisEl = document.getElementById("analysis-"+id);
-  if(analysisEl) { analysisEl.querySelector(".k-analysis-text").textContent=text; analysisEl.style.display="block"; }
-  if(btn) btn.textContent="→ AI DEEP DIVE";
+async function deepDive(id){
+  const m=KM.find(x=>x.id===id);if(!m)return;
+  const btn=document.getElementById("kd-"+id);btn.textContent="⟳ SEARCHING...";
+  const text=await aiQ("Market: "+m.title+" Odds: "+m.odds+"¢ "+m.cat);
+  kalshiCache[id]=text;
+  const el=document.getElementById("ka-"+id);
+  el.innerHTML=kaHTML(id,text);el.classList.remove("hidden");
+  btn.textContent="→ AI DEEP DIVE";
 }
 
-// ---- POLYMARKET ----
-async function renderMarkets() {
-  document.getElementById("panel-markets").innerHTML = `
-    <div class="poly-header"><h3>📊 Polymarket volume leaders</h3><button class="btn-refresh" onclick="renderMarkets()">⟳ refresh</button></div>
-    <div id="polyList"><div class="loading">loading live odds ...</div></div>`;
-  try {
-    const res = await fetch("https://corsproxy.io/?url=https://gamma-api.polymarket.com/markets?closed=false&limit=20&order=volume&ascending=false");
-    const data = await res.json();
-    if(!Array.isArray(data)) throw new Error();
-    const markets = data.slice(0,20).map(m => {
-      let odds = 50;
-      try { if(m.outcomePrices){const p=JSON.parse(m.outcomePrices);if(p[0])odds=parseFloat(p[0])*100;} else if(m.yesBid) odds=parseFloat(m.yesBid)*100; } catch(e){}
-      const vol = m.volume24hr?parseFloat(m.volume24hr):(m.volume?parseFloat(m.volume):0);
-      const url = "https://polymarket.com/market/"+(m.slug||m.id);
-      return `<a class="poly-card" href="${url}" target="_blank">
-        <div class="poly-q">${m.question||"Polymarket"}</div>
-        <div style="display:flex;gap:12px;align-items:center">
-          <span class="poly-odds">${odds.toFixed(1)}%</span>
-          <span class="poly-vol">${fmtVol(vol)}</span>
-        </div>
-      </a>`;
-    });
-    document.getElementById("polyList").innerHTML = markets.join("");
-  } catch(e) {
-    document.getElementById("polyList").innerHTML = `<div class="error-msg">⚠️ Could not load Polymarket data.<br><span style="color:#666">CORS may be blocking. <a href="https://polymarket.com" target="_blank" style="color:#a78bfa">Open Polymarket →</a></span></div>`;
+// POLYMARKET
+async function renderMarkets(){
+  document.getElementById("markets").innerHTML=`<div class="rowbar"><h3>📊 Polymarket</h3><button class="rbtn" onclick="renderMarkets()">⟳ refresh</button></div><div id="pl"><div style="text-align:center;padding:40px;color:#777">loading ...</div></div>`;
+  try{
+    const r=await fetch("https://corsproxy.io/?url=https://gamma-api.polymarket.com/markets?closed=false&limit=20&order=volume&ascending=false");
+    const d=await r.json();
+    if(!Array.isArray(d))throw 0;
+    document.getElementById("pl").innerHTML=d.slice(0,20).map(m=>{
+      let odds=50;try{if(m.outcomePrices){const p=JSON.parse(m.outcomePrices);if(p[0])odds=parseFloat(p[0])*100;}else if(m.yesBid)odds=parseFloat(m.yesBid)*100;}catch(e){}
+      const vol=m.volume24hr?parseFloat(m.volume24hr):(m.volume?parseFloat(m.volume):0);
+      return`<a class="pcard" href="https://polymarket.com/market/${m.slug||m.id}" target="_blank">
+        <div class="pq">${m.question||"Market"}</div>
+        <div style="display:flex;gap:10px;align-items:center"><span class="podds">${odds.toFixed(1)}%</span><span class="pvol">${fmtV(vol)}</span></div></a>`;
+    }).join("");
+  }catch(e){document.getElementById("pl").innerHTML=`<div style="text-align:center;padding:40px;color:#ff6b6b;font-size:13px">⚠️ Could not load Polymarket.<br><a href="https://polymarket.com" target="_blank" style="color:#a78bfa">Open Polymarket →</a></div>`;}
+}
+
+// STOCKS
+async function renderStocks(){
+  document.getElementById("stocks").innerHTML=`<div class="rowbar"><h3>📈 Watchlist</h3><button class="rbtn" onclick="renderStocks()">🔄 update</button></div><div style="text-align:center;padding:40px;color:#777">fetching data ...</div>`;
+  const res=[];
+  for(const t of TICKERS){
+    try{const r=await fetch("https://corsproxy.io/?url=https://query1.finance.yahoo.com/v8/finance/chart/"+t.sym+"?interval=1d&range=5d");
+      const j=await r.json(),meta=j.chart?.result?.[0]?.meta;
+      if(meta){const cur=meta.regularMarketPrice,prev=meta.previousClose,ch=cur-prev;res.push({...t,price:cur,change:ch,pct:ch/prev*100});}
+      else res.push({...t,price:null});
+    }catch(e){res.push({...t,price:null});}
   }
-}
-
-// ---- STOCKS ----
-async function renderStocks() {
-  document.getElementById("panel-stocks").innerHTML = `
-    <div class="stocks-header"><h3>📈 Watchlist</h3><button class="btn-refresh" onclick="renderStocks()">🔄 update</button></div>
-    <div class="loading">fetching market data ...</div>`;
-  const results = [];
-  for(const item of WATCH_TICKERS) {
-    try {
-      const r = await fetch("https://corsproxy.io/?url=https://query1.finance.yahoo.com/v8/finance/chart/"+item.sym+"?interval=1d&range=5d");
-      const j = await r.json();
-      const meta = j.chart?.result?.[0]?.meta;
-      if(meta) {
-        const cur = meta.regularMarketPrice;
-        const prev = meta.previousClose;
-        const ch = cur-prev;
-        const pct = ch/prev*100;
-        results.push({...item,price:cur,change:ch,pct});
-      } else results.push({...item,price:null});
-    } catch(e) { results.push({...item,price:null}); }
-  }
-  let html = `<div class="stocks-header"><h3>📈 Watchlist</h3><button class="btn-refresh" onclick="renderStocks()">🔄 update</button></div><div class="stocks-grid">`;
-  results.forEach(q => {
-    const chColor = q.change>=0?"#1db954":"#ff5e6e";
-    html += `<div class="stock-card">
-      <div class="stock-top"><span class="stock-name">${q.label}</span><span class="stock-sym">${q.sym}</span></div>
-      <div class="stock-price">${q.price!=null?"$"+q.price.toFixed(2):"—"}</div>
-      ${q.change!=null?`<div class="stock-change" style="color:${chColor}">${q.change>=0?"▲":"▼"} ${Math.abs(q.change).toFixed(2)} (${q.pct.toFixed(2)}%)</div>`:""}
-      <div class="stock-cat">${q.cat}</div>
-    </div>`;
+  let h=`<div class="rowbar"><h3>📈 Watchlist</h3><button class="rbtn" onclick="renderStocks()">🔄 update</button></div><div class="sgrid">`;
+  res.forEach(q=>{const cc=q.change>=0?"#1db954":"#ff5e6e";
+    h+=`<div class="scard"><div class="stop"><span class="sname">${q.label}</span><span class="ssym">${q.sym}</span></div>
+    <div class="sprice">${q.price!=null?"$"+q.price.toFixed(2):"—"}</div>
+    ${q.change!=null?`<div class="schange" style="color:${cc}">${q.change>=0?"▲":"▼"} ${Math.abs(q.change).toFixed(2)} (${q.pct.toFixed(2)}%)</div>`:""}
+    <div class="scat">${q.cat}</div></div>`;
   });
-  html += `</div>`;
-  document.getElementById("panel-stocks").innerHTML = html;
+  document.getElementById("stocks").innerHTML=h+"</div>";
 }
 
-// ---- AI TAB ----
-function renderAI() {
-  const total=calls.length, correct=calls.filter(c=>c.outcome==="correct").length, pending=calls.filter(c=>c.outcome==="pending").length;
-  const graded=calls.filter(c=>c.outcome==="correct"||c.outcome==="incorrect").length;
-  const acc=graded?Math.round(correct/graded*100):null;
-  document.getElementById("panel-ai").innerHTML = `
-    <div class="ai-hero">
-      <div class="ai-icon">🤖</div>
-      <div class="ai-title">BEV·AI</div>
-      <p class="ai-desc">Your personal prediction market analyst. Ask anything about Kalshi, Polymarket, stocks, geopolitics, energy.</p>
-      <div class="ai-snapshot">
-        <div class="ai-snap-title">📋 Your edge snapshot</div>
-        <div class="ai-snap-stats">
-          <div class="ai-snap-stat"><span style="color:#a78bfa">Calls tracked</span><span>${total}</span></div>
-          <div class="ai-snap-stat"><span style="color:#00ff9d">Win rate</span><span>${acc!==null?acc+"%":"—"}</span></div>
-          <div class="ai-snap-stat"><span style="color:#ffd166">Pending</span><span>${pending}</span></div>
+// AI
+function renderAI(){
+  const tot=calls.length,cor=calls.filter(c=>c.outcome==="correct").length,pen=calls.filter(c=>c.outcome==="pending").length;
+  const gr=calls.filter(c=>c.outcome==="correct"||c.outcome==="incorrect").length;
+  const acc=gr?Math.round(cor/gr*100):null;
+  document.getElementById("ai").innerHTML=`
+    <div class="aihero">
+      <div style="font-size:38px;margin-bottom:8px">🤖</div>
+      <div style="font-size:20px;font-weight:800;margin-bottom:4px">BEV·AI</div>
+      <div style="color:#bcbce6;font-size:13px">Personal prediction analyst. Ask anything about Kalshi, Polymarket, stocks, geopolitics.</div>
+      <div class="aisnap">
+        <div style="font-weight:600;font-size:13px">📋 Your edge snapshot</div>
+        <div class="aisnapstats">
+          <div><span style="color:#a78bfa;font-size:11px">Calls tracked</span><br><span style="font-size:24px;font-weight:800">${tot}</span></div>
+          <div><span style="color:#00ff9d;font-size:11px">Win rate</span><br><span style="font-size:24px;font-weight:800">${acc!==null?acc+"%":"—"}</span></div>
+          <div><span style="color:#ffd166;font-size:11px">Pending</span><br><span style="font-size:24px;font-weight:800">${pen}</span></div>
         </div>
       </div>
     </div>
-    <div class="ai-box">
-      <div class="ai-label">ASK BEV·AI</div>
-      <div class="ai-input-row">
-        <input class="ai-input" id="aiQuery" placeholder="Will Hormuz normalize? Oil price? NBA Finals? Best Kalshi bet?" onkeydown="if(event.key==='Enter')askAI()">
-        <button class="btn-analyze" id="aiBtn" onclick="askAI()">→</button>
-      </div>
-      <div id="aiResult"></div>
+    <div class="aibox"><div class="ailbl">ASK BEV·AI</div>
+      <div class="airow"><input class="aiinput" id="aiq" placeholder="Hormuz? Oil? NBA Finals? Best Kalshi bet?">
+      <button class="aibtn" id="aibtn" onclick="askAI()">→</button></div>
+      <div id="air"></div>
     </div>`;
+  document.getElementById("aiq").addEventListener("keydown",e=>{if(e.key==="Enter")askAI();});
 }
-async function askAI() {
-  const q = document.getElementById("aiQuery").value.trim();
-  if(!q) return;
-  const btn = document.getElementById("aiBtn");
-  btn.disabled=true; btn.textContent="...";
-  document.getElementById("aiResult").innerHTML="";
-  const text = await aiAnalyze(q);
-  document.getElementById("aiResult").innerHTML = `<div class="ai-result"><div class="ai-label">BEV·AI ANALYSIS</div>${text}</div>`;
-  btn.disabled=false; btn.textContent="→";
+async function askAI(){
+  const q=document.getElementById("aiq").value.trim();if(!q)return;
+  const btn=document.getElementById("aibtn");btn.disabled=true;btn.textContent="...";
+  const text=await aiQ(q);
+  document.getElementById("air").innerHTML=`<div class="aires"><div class="ailbl">BEV·AI ANALYSIS</div>${text}</div>`;
+  btn.disabled=false;btn.textContent="→";
 }
 
-// ---- INIT ----
+// INIT
 renderStats();
 renderCalls();
 </script>
