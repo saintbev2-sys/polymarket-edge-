@@ -2,124 +2,502 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Prediction Hub • Saint Bev</title>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/babel-standalone/babel.min.js"></script>
   <style>
-    body { margin:0; background:#080808; color:#fff; font-family:'DM Mono',monospace; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #080808;
+      color: #eef2ff;
+      font-family: 'Inter', monospace;
+      line-height: 1.4;
+      padding: 20px 16px 48px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #111;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2c2c2c;
+      border-radius: 10px;
+    }
+
+    .glass-card {
+      background: rgba(12, 12, 16, 0.85);
+      backdrop-filter: blur(2px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 28px;
+      transition: all 0.2s ease;
+    }
+
+    button {
+      font-family: inherit;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 12px;
+    }
+
+    .confidence-bar {
+      height: 6px;
+      background: #1e1e24;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .confidence-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #a78bfa, #c084fc);
+      border-radius: 12px;
+    }
   </style>
 </head>
 <body>
-  <div id="root"></div>
+<div id="root"></div>
 
-  <script type="text/babel">
-    const { useState, useEffect, useCallback } = React;
+<script type="text/babel">
+  const { useState, useEffect, useCallback } = React;
 
-    // ── Constants ──────────────────────────────────────────────────────────────
-    const CATEGORIES = ["All", "Crypto", "Politics", "Energy/Gas", "Geopolitics", "Stocks", "Other"];
+  // ---------- CONSTANTS ----------
+  const CATEGORIES = ["Crypto", "Politics", "Energy/Gas", "Geopolitics", "Stocks", "Other"];
+  const OUTCOME_LABELS = { correct: "✅ Correct", incorrect: "❌ Wrong", pending: "⏳ Pending" };
+  const OUTCOME_COLORS = { correct: "#00ff9d", incorrect: "#ff4d6d", pending: "#ffd166" };
+  
+  const categoryColor = (cat) => ({
+    Crypto: "#f7931a", Politics: "#a78bfa", "Energy/Gas": "#fb923c",
+    Geopolitics: "#f43f5e", Stocks: "#34d399", Other: "#94a3b8"
+  }[cat] || "#adb7be");
 
-    const OUTCOME_LABELS = { "": "—", correct: "✅ Correct", incorrect: "❌ Wrong", pending: "⏳ Pending" };
+  const PM_API = "https://corsproxy.io/?https://gamma-api.polymarket.com/markets?closed=false&limit=24&order=volume&ascending=false";
+  const YF_PROXY = (ticker) => `https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=5d`;
 
-    const categoryColor = (cat) => ({
-      Crypto: "#f7931a", Politics: "#a78bfa", "Energy/Gas": "#fb923c",
-      Geopolitics: "#f43f5e", Stocks: "#34d399", Other: "#94a3b8", All: "#fff"
-    }[cat] || "#888");
+  const WATCH_TICKERS = [
+    { sym: "SPY", label: "S&P 500", cat: "Index" },
+    { sym: "QQQ", label: "Nasdaq 100", cat: "Index" },
+    { sym: "BTC-USD", label: "Bitcoin", cat: "Crypto" },
+    { sym: "ETH-USD", label: "Ethereum", cat: "Crypto" },
+    { sym: "NVDA", label: "NVIDIA", cat: "Stocks" },
+    { sym: "TSLA", label: "Tesla", cat: "Stocks" },
+    { sym: "USO", label: "Oil Fund", cat: "Energy" },
+    { sym: "XOM", label: "Exxon", cat: "Energy" },
+    { sym: "GLD", label: "Gold", cat: "Commodity" },
+  ];
 
-    const gradeColor = (o) => ({ correct: "#00ff9d", incorrect: "#ff4d6d", pending: "#ffd166" }[o] || "#666");
+  const formatNumber = (n) => {
+    if (n == null) return "—";
+    if (n >= 1e9) return `$${(n/1e9).toFixed(1)}B`;
+    if (n >= 1e6) return `$${(n/1e6).toFixed(0)}M`;
+    if (n >= 1e3) return `$${(n/1e3).toFixed(1)}K`;
+    return `$${n.toFixed(2)}`;
+  };
 
-    const PM_API = "https://corsproxy.io/?https://gamma-api.polymarket.com/markets?closed=false&limit=20&order=volume&ascending=false";
-    const YF_PROXY = (ticker) => `https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=5d`;
+  const formatVolume = (vol) => {
+    if (!vol) return "—";
+    if (vol >= 1e6) return `$${(vol/1e6).toFixed(1)}M`;
+    if (vol >= 1e3) return `$${(vol/1e3).toFixed(0)}K`;
+    return `$${vol}`;
+  };
 
-    const WATCH_TICKERS = [
-      { sym: "SPY", label: "S&P 500 ETF", cat: "Index" },
-      { sym: "QQQ", label: "Nasdaq ETF", cat: "Index" },
-      { sym: "USO", label: "Oil ETF", cat: "Energy" },
-      { sym: "XOM", label: "ExxonMobil", cat: "Energy" },
-      { sym: "BTC-USD", label: "Bitcoin", cat: "Crypto" },
-      { sym: "TSLA", label: "Tesla", cat: "Stocks" },
-      { sym: "NVDA", label: "NVIDIA", cat: "Stocks" },
-      { sym: "GLD", label: "Gold ETF", cat: "Commodity" },
-    ];
+  // helper: store local storage
+  const useLocalStorage = (key, initial) => {
+    const [stored, setStored] = useState(() => {
+      try {
+        const item = window.localStorage.getItem(key);
+        return item ? JSON.parse(item) : initial;
+      } catch { return initial; }
+    });
+    const setValue = (value) => {
+      const toStore = value instanceof Function ? value(stored) : value;
+      setStored(toStore);
+      window.localStorage.setItem(key, JSON.stringify(toStore));
+    };
+    return [stored, setValue];
+  };
 
-    function fmt(n) {
-      if (n == null) return "—";
-      return n >= 1e9 ? `$${(n/1e9).toFixed(1)}B` : n >= 1e6 ? `$${(n/1e6).toFixed(0)}M` : `$${n.toFixed(2)}`;
-    }
+  // ----- ADD / EDIT MODAL -----
+  const CallModal = ({ isOpen, onClose, onSave, initialCall }) => {
+    const [form, setForm] = useState({
+      id: null,
+      title: "",
+      category: "Crypto",
+      myCall: "YES",
+      confidence: 70,
+      notes: "",
+      outcome: "pending",
+      source: "",
+      date: new Date().toLocaleDateString()
+    });
 
-    // ── Components ─────────────────────────────────────────────────────────────
-    function Pill({ children, color }) {
-      return React.createElement('span', {
-        style: {
-          fontSize: "10px", color: color || "#555", border: `1px solid ${(color||"#555")}44`,
-          borderRadius: "20px", padding: "3px 8px", whiteSpace: "nowrap"
-        }
-      }, children);
-    }
+    useEffect(() => {
+      if (initialCall) {
+        setForm({ ...initialCall });
+      } else {
+        setForm({
+          id: null,
+          title: "",
+          category: "Crypto",
+          myCall: "YES",
+          confidence: 70,
+          notes: "",
+          outcome: "pending",
+          source: "",
+          date: new Date().toLocaleDateString()
+        });
+      }
+    }, [initialCall, isOpen]);
 
-    function StatBar({ calls }) {
-      const graded = calls.filter(c => c.outcome === "correct" || c.outcome === "incorrect");
-      const correct = calls.filter(c => c.outcome === "correct").length;
-      const p = graded.length ? Math.round((correct / graded.length) * 100) : null;
-      const pending = calls.filter(c => c.outcome === "pending").length;
+    if (!isOpen) return null;
 
-      return React.createElement('div', { style: { display: "flex", gap: "10px", marginBottom: "20px" } },
-        [
-          { label: "Total", val: calls.length, color: "#fff" },
-          { label: "Win %", val: p != null ? `${p}%` : "—", color: p >= 60 ? "#00ff9d" : p < 40 ? "#ff4d6d" : "#ffd166" },
-          { label: "✅", val: correct, color: "#00ff9d" },
-          { label: "⏳", val: pending, color: "#ffd166" },
-        ].map(s => 
-          React.createElement('div', {
-            key: s.label,
-            style: { flex: 1, background: "#111", border: "1px solid #1e1e1e", borderRadius: "10px", padding: "10px 0", textAlign: "center" }
-          },
-            React.createElement('div', { style: { fontSize: "20px", fontWeight: 800, color: s.color } }, s.val),
-            React.createElement('div', { style: { fontSize: "10px", color: "#444", marginTop: "2px", textTransform: "uppercase", letterSpacing: "1px" } }, s.label)
-          )
-        )
-      );
-    }
+    const handleChange = (e) => {
+      setForm({ ...form, [e.target.name]: e.target.value });
+    };
 
-    function AddCallModal({ onSave, onClose }) {
-      const [form, setForm] = React.useState({
-        title: "", category: "Energy/Gas", myCall: "YES", confidence: 50, notes: "", outcome: "pending", source: ""
-      });
+    const handleSubmit = () => {
+      if (!form.title.trim()) return;
+      const now = new Date().toLocaleDateString();
+      const finalCall = {
+        ...form,
+        id: form.id || Date.now(),
+        date: form.id ? form.date : now,
+        title: form.title.trim(),
+        notes: form.notes || "",
+        source: form.source || "",
+      };
+      onSave(finalCall);
+      onClose();
+    };
 
-      const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
-
-      return React.createElement('div', {
-        style: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, padding: 16 }
-      },
-        React.createElement('div', {
-          style: { background: "#111", border: "1px solid #2a2a2a", borderRadius: 16, width: "100%", maxWidth: 460, padding: 22 }
-        },
-          // ... (full modal content - let me know if you want me to expand it fully)
-          React.createElement('button', { onClick: onClose }, "Cancel"),
-          React.createElement('button', {
-            onClick: () => { if (form.title) onSave({...form, id: Date.now(), date: new Date().toLocaleDateString()}); }
-          }, "Save →")
-        )
-      );
-    }
-
-    // Stub for AITab
-    function AITab({ calls }) {
-      return React.createElement('div', { style: { padding: "40px 20px", textAlign: "center", color: "#666" } },
-        React.createElement('h2', null, "🤖 AI Analysis"),
-        React.createElement('p', null, "Coming soon — portfolio review & edge detection")
-      );
-    }
-
-    // MarketsTab, StocksTab, Main App...
-
-    // (The full cleaned code is quite long. Reply with "Give me the full file" and I'll provide the complete version in one block.)
-
-    ReactDOM.render(
-      React.createElement(PredictionHub),
-      document.getElementById('root')
+    return (
+      <div style={{
+        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(6px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 16
+      }} onClick={onClose}>
+        <div style={{ background: '#101014', border: '1px solid #2a2a2e', borderRadius: 32, width: '100%', maxWidth: 520, padding: 28 }} onClick={e => e.stopPropagation()}>
+          <h3 style={{ fontSize: 24, fontWeight: 700, marginBottom: 20, letterSpacing: -0.3 }}>{initialCall ? '✏️ Edit prediction' : '➕ New prediction'}</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <input name="title" placeholder="Prediction title *" value={form.title} onChange={handleChange} style={{ background: '#1a1a20', border: '1px solid #2e2e36', borderRadius: 20, padding: '12px 16px', color: 'white', fontSize: 14 }} />
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <select name="category" value={form.category} onChange={handleChange} style={{ flex: 1, background: '#1a1a20', border: '1px solid #2e2e36', borderRadius: 20, padding: '12px', color: 'white' }}>
+                {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+              </select>
+              <select name="myCall" value={form.myCall} onChange={handleChange} style={{ flex: 1, background: '#1a1a20', border: '1px solid #2e2e36', borderRadius: 20, padding: '12px', color: 'white' }}>
+                <option>YES</option><option>NO</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ fontSize: 12, color: '#aaa', marginBottom: 6, display: 'block' }}>Confidence: {form.confidence}%</label>
+              <input name="confidence" type="range" min="0" max="100" value={form.confidence} onChange={handleChange} style={{ width: '100%', background: '#2c2c34' }} />
+            </div>
+            <select name="outcome" value={form.outcome} onChange={handleChange} style={{ background: '#1a1a20', border: '1px solid #2e2e36', borderRadius: 20, padding: '12px', color: 'white' }}>
+              <option value="pending">⏳ Pending</option>
+              <option value="correct">✅ Correct</option>
+              <option value="incorrect">❌ Incorrect</option>
+            </select>
+            <input name="source" placeholder="Source URL (optional)" value={form.source} onChange={handleChange} style={{ background: '#1a1a20', border: '1px solid #2e2e36', borderRadius: 20, padding: '12px 16px', color: 'white', fontSize: 13 }} />
+            <textarea name="notes" placeholder="Notes / thesis ..." rows="2" value={form.notes} onChange={handleChange} style={{ background: '#1a1a20', border: '1px solid #2e2e36', borderRadius: 20, padding: '12px', color: 'white', fontSize: 13, resize: 'vertical' }} />
+          </div>
+          <div style={{ display: 'flex', gap: 12, marginTop: 28, justifyContent: 'flex-end' }}>
+            <button onClick={onClose} style={{ background: '#1f1f26', border: 'none', borderRadius: 40, padding: '10px 18px', color: '#bbb' }}>Cancel</button>
+            <button onClick={handleSubmit} style={{ background: '#a78bfa', border: 'none', borderRadius: 40, padding: '10px 22px', color: '#000', fontWeight: 600 }}>Save →</button>
+          </div>
+        </div>
+      </div>
     );
-  </script>
+  };
+
+  // ----- STAT BAR (reused) -----
+  const StatBar = ({ calls }) => {
+    const total = calls.length;
+    const graded = calls.filter(c => c.outcome === "correct" || c.outcome === "incorrect");
+    const correctCount = calls.filter(c => c.outcome === "correct").length;
+    const winPercent = graded.length ? Math.round((correctCount / graded.length) * 100) : null;
+    const pending = calls.filter(c => c.outcome === "pending").length;
+    return (
+      <div className="stat-grid" style={{ marginBottom: 28 }}>
+        {[
+          { label: "TOTAL", val: total, color: "#fff" },
+          { label: "WIN %", val: winPercent != null ? `${winPercent}%` : "—", color: winPercent >= 60 ? "#00ff9d" : winPercent < 40 && winPercent !== null ? "#ff4d6d" : "#ffd166" },
+          { label: "✅ CORRECT", val: correctCount, color: "#00ff9d" },
+          { label: "⏳ PENDING", val: pending, color: "#ffd166" },
+        ].map(stat => (
+          <div key={stat.label} style={{ background: '#0c0c10', borderRadius: 24, padding: '14px 0', textAlign: 'center', border: '1px solid #1e1e24' }}>
+            <div style={{ fontSize: 28, fontWeight: 800, color: stat.color, letterSpacing: '-0.5px' }}>{stat.val}</div>
+            <div style={{ fontSize: 10, color: '#5a5a6e', marginTop: 4, letterSpacing: '1px' }}>{stat.label}</div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // ----- MY CALLS TAB -----
+  const MyCallsTab = ({ calls, onEdit, onDelete, onUpdateOutcome }) => {
+    const [filterCat, setFilterCat] = useState("All");
+    const filtered = filterCat === "All" ? calls : calls.filter(c => c.category === filterCat);
+    
+    return (
+      <div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
+          {["All", ...CATEGORIES].map(cat => (
+            <button key={cat} onClick={() => setFilterCat(cat)} style={{
+              background: filterCat === cat ? categoryColor(cat === "All" ? "#fff" : cat) : "#16161c",
+              border: 'none', borderRadius: 40, padding: '6px 16px', color: filterCat === cat ? "#000" : "#ccc",
+              fontWeight: 500, fontSize: 13
+            }}>{cat}</button>
+          ))}
+        </div>
+        {filtered.length === 0 && <div style={{ textAlign: 'center', color: '#555', padding: 48 }}>✨ No predictions yet — add your first call</div>}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {filtered.map(call => (
+            <div key={call.id} style={{ background: '#0e0e12', borderRadius: 24, padding: 18, border: '1px solid #26262c' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 8 }}>
+                <div><span style={{ background: categoryColor(call.category) + '20', color: categoryColor(call.category), borderRadius: 40, padding: '4px 12px', fontSize: 11, fontWeight: 600 }}>{call.category}</span>
+                <div style={{ fontSize: 18, fontWeight: 700, marginTop: 8 }}>{call.title} <span style={{ fontSize: 14, color: '#b9b9e6' }}>• {call.myCall}</span></div></div>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <select value={call.outcome} onChange={(e) => onUpdateOutcome(call.id, e.target.value)} style={{ background: '#1d1d24', border: '1px solid #2f2f3a', borderRadius: 40, padding: '6px 12px', color: 'white', fontSize: 12 }}>
+                    <option value="pending">⏳ Pending</option><option value="correct">✅ Correct</option><option value="incorrect">❌ Incorrect</option>
+                  </select>
+                  <button onClick={() => onEdit(call)} style={{ background: '#282832', border: 'none', borderRadius: 30, padding: '6px 12px', fontSize: 12 }}>✏️</button>
+                  <button onClick={() => onDelete(call.id)} style={{ background: '#2a1a1f', border: 'none', borderRadius: 30, padding: '6px 12px', color: '#ff8a8a' }}>🗑️</button>
+                </div>
+              </div>
+              <div style={{ marginTop: 14 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}><span>Confidence</span><span>{call.confidence}%</span></div>
+                <div className="confidence-bar"><div className="confidence-fill" style={{ width: `${call.confidence}%` }}></div></div>
+              </div>
+              {call.notes && <div style={{ fontSize: 13, color: '#ababb5', marginTop: 12, borderLeft: '2px solid #2c2c34', paddingLeft: 12 }}>{call.notes}</div>}
+              {call.source && <div style={{ fontSize: 11, marginTop: 10 }}><a href={call.source} target="_blank" style={{ color: '#a78bfa', textDecoration: 'none' }}>🔗 source</a></div>}
+              <div style={{ fontSize: 10, color: '#5f5f73', marginTop: 10 }}>📅 {call.date}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // ----- MARKETS TAB (Polymarket) -----
+  const MarketsTab = () => {
+    const [markets, setMarkets] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const fetchMarkets = useCallback(async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(PM_API);
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          const formatted = data.slice(0, 20).map(m => {
+            let yesOdds = 0.5;
+            if (m.outcomePrices) {
+              try {
+                const prices = JSON.parse(m.outcomePrices);
+                if (Array.isArray(prices) && prices[0]) yesOdds = parseFloat(prices[0]);
+              } catch(e) {}
+            } else if (m.yesBid) yesOdds = parseFloat(m.yesBid);
+            const volume = m.volume24hr ? parseFloat(m.volume24hr) : (m.volume ? parseFloat(m.volume) : 0);
+            return {
+              id: m.id || m.marketId,
+              question: m.question || m.marketName || "Polymarket",
+              odds: (yesOdds * 100).toFixed(1),
+              volume: volume,
+              url: `https://polymarket.com/market/${m.slug || m.id}`
+            };
+          });
+          setMarkets(formatted);
+        }
+      } catch (err) { console.error(err); }
+      finally { setLoading(false); }
+    }, []);
+    useEffect(() => { fetchMarkets(); }, []);
+    return (
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+          <h3 style={{ fontWeight: 600 }}>📊 Polymarket volume leaders</h3>
+          <button onClick={fetchMarkets} style={{ background: '#1e1e26', border: 'none', borderRadius: 30, padding: '6px 14px', fontSize: 12 }}>⟳ refresh</button>
+        </div>
+        {loading && <div style={{ textAlign: 'center', padding: 40, color: '#777' }}>loading live odds ...</div>}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {markets.map(m => (
+            <a key={m.id} href={m.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+              <div style={{ background: '#0b0b0f', borderRadius: 20, padding: '14px 18px', border: '1px solid #222', transition: '0.1s', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div style={{ flex: 2 }}><div style={{ fontWeight: 500, fontSize: 15, color: '#f0f0ff' }}>{m.question}</div></div>
+                <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                  <span style={{ fontFamily: 'DM Mono', fontWeight: 600, fontSize: 18, color: '#c084fc' }}>{m.odds}%</span>
+                  <span style={{ fontSize: 12, background: '#191920', padding: '4px 10px', borderRadius: 40 }}>{formatVolume(m.volume)}</span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // ----- STOCKS TAB (Yahoo Finance) -----
+  const StocksTab = () => {
+    const [quotes, setQuotes] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const fetchAllStocks = async () => {
+      setLoading(true);
+      const results = [];
+      for (const item of WATCH_TICKERS) {
+        try {
+          const res = await fetch(YF_PROXY(item.sym));
+          const json = await res.json();
+          const chart = json.chart?.result?.[0];
+          if (chart) {
+            const meta = chart.meta;
+            const current = meta.regularMarketPrice;
+            const prevClose = meta.previousClose;
+            const change = current - prevClose;
+            const changePercent = (change / prevClose) * 100;
+            results.push({ ...item, price: current, change, changePercent, prevClose });
+          } else {
+            results.push({ ...item, price: null, change: null });
+          }
+        } catch (err) {
+          results.push({ ...item, price: null, change: null });
+        }
+      }
+      setQuotes(results);
+      setLoading(false);
+    };
+    useEffect(() => { fetchAllStocks(); }, []);
+    return (
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
+          <h3 style={{ fontWeight: 600 }}>📈 Watchlist & prices</h3>
+          <button onClick={fetchAllStocks} style={{ background: '#1e1e2a', border: 'none', borderRadius: 30, padding: '6px 14px' }}>🔄 update</button>
+        </div>
+        {loading && <div style={{ padding: 40, textAlign: 'center' }}>fetching live market data ...</div>}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px,1fr))', gap: 12 }}>
+          {quotes.map(q => (
+            <div key={q.sym} style={{ background: '#0c0c10', borderRadius: 20, padding: 14, border: '1px solid #24242c' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontWeight: 700, fontSize: 16 }}>{q.label}</span>
+                <span style={{ fontSize: 11, background: '#19191f', padding: '2px 8px', borderRadius: 20 }}>{q.sym}</span>
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 600, marginTop: 8 }}>{q.price != null ? `$${q.price.toFixed(2)}` : '—'}</div>
+              {q.change != null && (
+                <div style={{ fontSize: 14, color: q.change >= 0 ? '#1db954' : '#ff5e6e', marginTop: 4 }}>
+                  {q.change >= 0 ? '▲' : '▼'} {Math.abs(q.change).toFixed(2)} ({q.changePercent.toFixed(2)}%)
+                </div>
+              )}
+              <div style={{ fontSize: 10, color: '#6e6e86', marginTop: 8 }}>{q.cat}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+  
+  // ----- AI TAB (Placeholder)-----
+  const AITab = ({ calls }) => {
+    const total = calls.length;
+    const correct = calls.filter(c => c.outcome === "correct").length;
+    const pending = calls.filter(c => c.outcome === "pending").length;
+    const accuracy = total ? ((correct / (total - pending)) * 100).toFixed(0) : 0;
+    return (
+      <div style={{ padding: '16px 0' }}>
+        <div style={{ background: 'linear-gradient(135deg, #0b0b1a, #101018)', borderRadius: 36, padding: 28, border: '1px solid #2a2a36' }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>🤖 BEV·AI</div>
+          <p style={{ color: '#bcbce6', maxWidth: 480 }}>Agentic analysis of your prediction track record.</p>
+          <div style={{ background: '#00000055', borderRadius: 28, marginTop: 24, padding: 20 }}>
+            <div style={{ fontWeight: 600, marginBottom: 12 }}>📋 Portfolio edge snapshot</div>
+            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+              <div><span style={{ color: '#a78bfa' }}>Calls tracked</span><br/><span style={{ fontSize: 28, fontWeight: 800 }}>{total}</span></div>
+              <div><span style={{ color: '#00ff9d' }}>Win rate (settled)</span><br/><span style={{ fontSize: 28, fontWeight: 800 }}>{isNaN(accuracy) ? '—' : accuracy}%</span></div>
+              <div><span style={{ color: '#ffd166' }}>Pending alpha</span><br/><span style={{ fontSize: 28 }}>{pending}</span></div>
+            </div>
+            <div style={{ marginTop: 20, fontSize: 14, borderTop: '1px solid #2c2c3a', paddingTop: 16 }}>⚡ Insight: {correct > 0 ? "Keep refining conviction signals." : "Add more predictions to unlock AI feedback."}</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ---------- MAIN PREDICTION HUB ----------
+  const PredictionHub = () => {
+    const [activeTab, setActiveTab] = useState("mycalls");
+    const [calls, setCalls] = useLocalStorage("saintbev_predictions", [
+      { id: 1001, title: "BTC > $70k by June 2025", category: "Crypto", myCall: "YES", confidence: 82, notes: "ETF inflows + halving cycle", outcome: "pending", date: "Apr 12, 2025", source: "" },
+      { id: 1002, title: "Fed cuts rates in Sept", category: "Politics", myCall: "YES", confidence: 65, notes: "Inflation cooling", outcome: "pending", date: "Apr 10, 2025", source: "" },
+      { id: 1003, title: "Oil stays above $80", category: "Energy/Gas", myCall: "YES", confidence: 73, notes: "OPEC cuts", outcome: "correct", date: "Mar 28, 2025", source: "" },
+    ]);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [editingCall, setEditingCall] = useState(null);
+    
+    const addOrUpdateCall = (callData) => {
+      if (callData.id && calls.find(c => c.id === callData.id)) {
+        setCalls(prev => prev.map(c => c.id === callData.id ? callData : c));
+      } else {
+        setCalls(prev => [callData, ...prev]);
+      }
+    };
+    const deleteCall = (id) => setCalls(prev => prev.filter(c => c.id !== id));
+    const updateOutcome = (id, outcome) => setCalls(prev => prev.map(c => c.id === id ? { ...c, outcome } : c));
+    const openEdit = (call) => { setEditingCall(call); setModalOpen(true); };
+    const openAdd = () => { setEditingCall(null); setModalOpen(true); };
+    
+    return (
+      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+        {/* header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 28, flexWrap: 'wrap' }}>
+          <div>
+            <h1 style={{ fontSize: '2rem', fontWeight: 800, letterSpacing: '-1px', background: 'linear-gradient(135deg,#fff,#c6aaff)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>PREDICTION HUB</h1>
+            <p style={{ color: '#9292aa', fontSize: 13, marginTop: 4 }}>SAINT BEV · track your market edge</p>
+          </div>
+          <button onClick={openAdd} style={{ background: '#a78bfa', border: 'none', borderRadius: 60, padding: '10px 24px', fontWeight: 700, color: '#000', fontSize: 14, display: 'flex', alignItems: 'center', gap: 6 }}>+ New call</button>
+        </div>
+        
+        {/* stats summary */}
+        <StatBar calls={calls} />
+        
+        {/* tabs */}
+        <div style={{ display: 'flex', gap: 6, background: '#101014', borderRadius: 60, padding: 4, width: 'fit-content', marginBottom: 32, border: '1px solid #2a2a30' }}>
+          {[
+            { id: 'mycalls', label: '📋 My Calls' },
+            { id: 'markets', label: '🎲 Markets' },
+            { id: 'stocks', label: '📈 Stocks' },
+            { id: 'ai', label: '🤖 AI' }
+          ].map(tab => (
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
+              background: activeTab === tab.id ? '#a78bfa' : 'transparent',
+              color: activeTab === tab.id ? '#000' : '#ddd',
+              border: 'none', borderRadius: 60, padding: '8px 20px', fontWeight: 500, fontSize: 14, transition: '0.2s'
+            }}>{tab.label}</button>
+          ))}
+        </div>
+        
+        {/* tab content */}
+        <div className="glass-card" style={{ padding: '24px 20px', background: '#0a0a0e', borderRadius: 32 }}>
+          {activeTab === 'mycalls' && <MyCallsTab calls={calls} onEdit={openEdit} onDelete={deleteCall} onUpdateOutcome={updateOutcome} />}
+          {activeTab === 'markets' && <MarketsTab />}
+          {activeTab === 'stocks' && <StocksTab />}
+          {activeTab === 'ai' && <AITab calls={calls} />}
+        </div>
+        
+        <CallModal isOpen={modalOpen} onClose={() => { setModalOpen(false); setEditingCall(null); }} onSave={addOrUpdateCall} initialCall={editingCall} />
+      </div>
+    );
+  };
+  
+  ReactDOM.createRoot(document.getElementById("root")).render(<PredictionHub />);
+</script>
 </body>
 </html>
