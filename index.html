@@ -159,7 +159,10 @@ textarea.modal-field{resize:vertical;min-height:60px}
 <!-- MODAL -->
 <div class="modal-overlay hidden" id="modal" onclick="closeModalOutside(event)">
   <div class="modal-box">
-    <div class="modal-title" id="modalTitle">➕ New prediction</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <div class="modal-title" id="modalTitle" style="margin-bottom:0">➕ New prediction</div>
+      <button onclick="closeModal()" style="background:#2a2a32;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;color:#ccc;display:flex;align-items:center;justify-content:center;flex-shrink:0">✕</button>
+    </div>
     <input class="modal-field" id="mTitle" placeholder="Prediction title *">
     <div class="modal-row">
       <select class="modal-field" id="mCategory">
