@@ -23,11 +23,9 @@ button{cursor:pointer;transition:.15s}
 .tab.active{background:#a78bfa;color:#000}
 .panel{background:#0a0a0e;border:1px solid #1a1a20;border-radius:28px;padding:20px 16px}
 .hidden{display:none!important}
-/* filter */
 .filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
 .fbtn{background:#16161c;border:none;border-radius:40px;padding:5px 13px;color:#ccc;font-size:12px;cursor:pointer}
 .fbtn.on{color:#000}
-/* call card */
 .ccard{background:#0e0e12;border-radius:18px;padding:15px;border:1px solid #26262c;margin-bottom:10px}
 .ctop{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .ctag{border-radius:40px;padding:3px 10px;font-size:11px;font-weight:600;display:inline-block}
@@ -42,7 +40,6 @@ button{cursor:pointer;transition:.15s}
 .cnotes{font-size:12px;color:#ababb5;margin-top:9px;border-left:2px solid #2c2c34;padding-left:10px}
 .cdate{font-size:10px;color:#5f5f73;margin-top:7px}
 .empty{text-align:center;color:#444;padding:40px;font-size:14px}
-/* ai box */
 .aibox{background:#0c0c12;border:1px solid #1e1e2a;border-radius:18px;padding:14px;margin-bottom:18px}
 .ailbl{font-size:10px;color:#a78bfa;letter-spacing:2px;margin-bottom:8px}
 .airow{display:flex;gap:8px}
@@ -50,7 +47,6 @@ button{cursor:pointer;transition:.15s}
 .aibtn{background:#a78bfa;border:none;border-radius:12px;padding:9px 14px;color:#000;font-weight:700;font-size:12px}
 .aibtn:disabled{background:#1a1a24;color:#555}
 .aires{margin-top:10px;padding:12px;background:#08080f;border:1px solid #2a2a3a;border-radius:12px;font-size:13px;color:#ccc;line-height:1.8;white-space:pre-wrap}
-/* kalshi */
 .kcard{background:#0b0b0f;border-radius:18px;border:1px solid #1e1e26;margin-bottom:10px;overflow:hidden}
 .kinner{padding:14px}
 .kbadges{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;align-items:center}
@@ -66,12 +62,10 @@ button{cursor:pointer;transition:.15s}
 .kdive{flex:1;padding:8px;background:#141418;border:1px solid #2a2a34;border-radius:10px;color:#888;font-size:11px;cursor:pointer}
 .klink{padding:8px 12px;background:#141418;border:1px solid #2a2a34;border-radius:10px;color:#a78bfa;font-size:11px;text-decoration:none;display:flex;align-items:center}
 .kanalysis{border-top:1px solid #1e1e26;padding:14px;background:#070710}
-/* poly */
 .pcard{background:#0b0b0f;border-radius:18px;padding:13px 15px;border:1px solid #222;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;text-decoration:none}
 .pq{flex:2;font-weight:500;font-size:13px;color:#f0f0ff}
 .podds{font-family:'DM Mono',monospace;font-weight:600;font-size:17px;color:#c084fc}
 .pvol{font-size:11px;background:#191920;padding:3px 9px;border-radius:30px;color:#aaa}
-/* stocks */
 .sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
 .scard{background:#0c0c10;border-radius:18px;padding:13px;border:1px solid #24242c}
 .stop{display:flex;justify-content:space-between;align-items:center}
@@ -80,11 +74,9 @@ button{cursor:pointer;transition:.15s}
 .sprice{font-size:19px;font-weight:600;margin-top:7px}
 .schange{font-size:12px;margin-top:3px}
 .scat{font-size:10px;color:#6e6e86;margin-top:5px}
-/* ai hero */
 .aihero{background:linear-gradient(135deg,#0b0b1a,#101018);border-radius:28px;padding:22px;border:1px solid #2a2a36;margin-bottom:18px}
 .aisnap{background:#00000055;border-radius:20px;margin-top:14px;padding:14px}
 .aisnapstats{display:flex;gap:18px;flex-wrap:wrap;margin-top:8px}
-/* modal */
 #modal{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:999;padding:16px}
 .mbox{background:#111116;border:1px solid #2a2a2e;border-radius:28px;width:100%;max-width:480px;padding:22px;max-height:88vh;overflow-y:auto}
 .mhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
@@ -101,6 +93,8 @@ textarea.mfield{resize:vertical;min-height:58px}
 .rowbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
 .rowbar h3{font-weight:600;font-size:15px}
 .rbtn{background:#1e1e26;border:none;border-radius:20px;padding:5px 12px;font-size:12px;color:#ccc;cursor:pointer}
+.save-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a26;border:1px solid #a78bfa44;border-radius:30px;padding:8px 18px;font-size:12px;color:#a78bfa;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999}
+.save-toast.show{opacity:1}
 </style>
 </head>
 <body>
@@ -129,7 +123,6 @@ textarea.mfield{resize:vertical;min-height:58px}
   </div>
 </div>
 
-<!-- MODAL — starts hidden -->
 <div id="modal" class="hidden">
   <div class="mbox">
     <div class="mhead">
@@ -160,6 +153,8 @@ textarea.mfield{resize:vertical;min-height:58px}
   </div>
 </div>
 
+<div class="save-toast" id="toast">💾 saved</div>
+
 <script>
 const CAT_COLOR={Crypto:"#f7931a",Politics:"#a78bfa","Energy/Gas":"#fb923c",Geopolitics:"#f43f5e",Stocks:"#34d399",Other:"#94a3b8",Sports:"#ff8c42"};
 const EDGE={"+EV":{bg:"#0a2a0a",br:"#00cc44",tx:"#00ff55"},"FAIR":{bg:"#1a1a00",br:"#ccaa00",tx:"#ffcc00"},"AVOID":{bg:"#2a0a0a",br:"#cc2200",tx:"#ff4422"},"MONITOR":{bg:"#0a1a2a",br:"#0088cc",tx:"#00aaff"}};
@@ -175,11 +170,36 @@ const KM=[
 ];
 const TICKERS=[{sym:"SPY",label:"S&P 500",cat:"Index"},{sym:"QQQ",label:"Nasdaq 100",cat:"Index"},{sym:"BTC-USD",label:"Bitcoin",cat:"Crypto"},{sym:"ETH-USD",label:"Ethereum",cat:"Crypto"},{sym:"NVDA",label:"NVIDIA",cat:"Stocks"},{sym:"TSLA",label:"Tesla",cat:"Stocks"},{sym:"USO",label:"Oil Fund",cat:"Energy"},{sym:"XOM",label:"Exxon",cat:"Energy"},{sym:"GLD",label:"Gold",cat:"Commodity"}];
 
-let calls=[
+const STORAGE_KEY = "saintbev_prediction_calls";
+
+const DEFAULT_CALLS = [
   {id:1001,title:"BTC > $70k by June 2025",category:"Crypto",myCall:"YES",confidence:82,notes:"ETF inflows + halving cycle",outcome:"pending",date:"Apr 12, 2025",source:""},
   {id:1002,title:"Fed cuts rates in Sept",category:"Politics",myCall:"YES",confidence:65,notes:"Inflation cooling",outcome:"pending",date:"Apr 10, 2025",source:""},
   {id:1003,title:"Oil stays above $80",category:"Energy/Gas",myCall:"YES",confidence:73,notes:"OPEC cuts",outcome:"correct",date:"Mar 28, 2025",source:""},
 ];
+
+function loadCalls() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return DEFAULT_CALLS;
+}
+
+function saveCalls() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(calls));
+    showToast();
+  } catch(e) {}
+}
+
+function showToast() {
+  const t = document.getElementById("toast");
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 1500);
+}
+
+let calls = loadCalls();
 let editId=null, activeFilter="All", activeTab="mycalls", kalshiCache={};
 
 function fmtV(v){if(!v)return"—";if(v>=1e6)return"$"+(v/1e6).toFixed(1)+"M";if(v>=1e3)return"$"+(v/1e3).toFixed(0)+"K";return"$"+v;}
@@ -195,7 +215,6 @@ async function aiQ(msg){
   return"VERDICT: Lean YES\nCONFIDENCE: 65%\nREASONING: Sentiment and fundamentals align. Volume confirms.\nRISK: Headline risk.\nBET SIZE: Small to Medium.";
 }
 
-// STATS
 function renderStats(){
   const tot=calls.length,cor=calls.filter(c=>c.outcome==="correct").length,pen=calls.filter(c=>c.outcome==="pending").length;
   const gr=calls.filter(c=>c.outcome==="correct"||c.outcome==="incorrect").length;
@@ -207,7 +226,6 @@ function renderStats(){
   ].map(s=>`<div class="stat-card"><div class="stat-val" style="color:${s.c}">${s.v}</div><div class="stat-lbl">${s.l}</div></div>`).join("");
 }
 
-// TABS
 document.getElementById("tabBar").addEventListener("click",e=>{
   const btn=e.target.closest(".tab"); if(!btn)return;
   document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
@@ -220,7 +238,6 @@ document.getElementById("tabBar").addEventListener("click",e=>{
   if(tab==="ai")renderAI();
 });
 
-// MY CALLS
 function renderCalls(){
   const cats=["All","Crypto","Politics","Energy/Gas","Geopolitics","Stocks","Other","Sports"];
   const filtered=activeFilter==="All"?calls:calls.filter(c=>c.category===activeFilter);
@@ -254,10 +271,9 @@ function renderCalls(){
   document.getElementById("mycalls").innerHTML=h;
 }
 function setF(cat){activeFilter=cat;renderCalls();}
-function updOut(id,val){calls=calls.map(c=>c.id===id?{...c,outcome:val}:c);renderStats();renderCalls();}
-function delCall(id){if(confirm("Delete?")){calls=calls.filter(c=>c.id!==id);renderStats();renderCalls();}}
+function updOut(id,val){calls=calls.map(c=>c.id===id?{...c,outcome:val}:c);saveCalls();renderStats();renderCalls();}
+function delCall(id){if(confirm("Delete?")){calls=calls.filter(c=>c.id!==id);saveCalls();renderStats();renderCalls();}}
 
-// MODAL
 function openModal(){
   editId=null;
   document.getElementById("mtitle").textContent="➕ New prediction";
@@ -301,10 +317,10 @@ document.getElementById("btnSave").addEventListener("click",function(){
     date:new Date().toLocaleDateString()};
   if(editId){calls=calls.map(c=>c.id===editId?{...c,...d}:c);}
   else{calls.unshift({id:Date.now(),...d});}
+  saveCalls();
   closeModal();renderStats();renderCalls();
 });
 
-// KALSHI
 function renderKalshi(){
   let h=`<div class="aibox"><div class="ailbl">ASK KALSHI AI</div>
     <div class="airow"><input class="aiinput" id="kq" placeholder="Hormuz? NBA? Oil above $85?">
@@ -345,7 +361,6 @@ async function deepDive(id){
   btn.textContent="→ AI DEEP DIVE";
 }
 
-// POLYMARKET
 async function renderMarkets(){
   document.getElementById("markets").innerHTML=`<div class="rowbar"><h3>📊 Polymarket</h3><button class="rbtn" onclick="renderMarkets()">⟳ refresh</button></div><div id="pl"><div style="text-align:center;padding:40px;color:#777">loading ...</div></div>`;
   try{
@@ -362,7 +377,6 @@ async function renderMarkets(){
   }catch(e){document.getElementById("pl").innerHTML=`<div style="text-align:center;padding:40px;color:#ff6b6b;font-size:13px">⚠️ Could not load Polymarket.<br><a href="https://polymarket.com" target="_blank" style="color:#a78bfa">Open Polymarket →</a></div>`;}
 }
 
-// STOCKS
 async function renderStocks(){
   document.getElementById("stocks").innerHTML=`<div class="rowbar"><h3>📈 Watchlist</h3><button class="rbtn" onclick="renderStocks()">🔄 update</button></div><div style="text-align:center;padding:40px;color:#777">fetching data ...</div>`;
   const res=[];
@@ -383,7 +397,6 @@ async function renderStocks(){
   document.getElementById("stocks").innerHTML=h+"</div>";
 }
 
-// AI
 function renderAI(){
   const tot=calls.length,cor=calls.filter(c=>c.outcome==="correct").length,pen=calls.filter(c=>c.outcome==="pending").length;
   const gr=calls.filter(c=>c.outcome==="correct"||c.outcome==="incorrect").length;
@@ -417,7 +430,6 @@ async function askAI(){
   btn.disabled=false;btn.textContent="→";
 }
 
-// INIT
 renderStats();
 renderCalls();
 </script>
